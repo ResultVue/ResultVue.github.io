@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Centre | ResultVue</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root { 
+            --primary: #12224A; --primary-hover: #0A1430;
+            --success: #00A651; --warning: #F58220; 
+            --danger: #E31837; --bg: #F4F7F9; 
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        
+        /* LOGIN UI */
+        #loginSection { background: linear-gradient(135deg, #f4f7f6 0%, #e8f5e9 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-card { background: white; padding: 40px 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 5px solid var(--primary); text-align: center; width: 100%; max-width: 400px; }
+        .login-card .logo { height: 65px; margin-bottom: 15px; object-fit: contain; }
+        .portal-title { color: var(--primary); font-size: 22px; font-weight: 800; margin: 0 0 5px 0; }
+        .subtitle { color: #666; font-size: 12px; margin-bottom: 25px; font-weight: 600; text-transform: uppercase; }
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; }
+        .login-input { width: 100%; padding: 14px 14px 14px 45px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fafafa; }
+        .login-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
+        .error { color: #E31837; font-size: 13px; font-weight: bold; margin-top: 15px; min-height: 20px; }
+
+        /* DASHBOARD UI */
+        #dashboardSection { display: none; }
+        .header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header-top { font-size: 11px; color: #8bb3ff; text-transform: uppercase; font-weight: bold;}
+        .header-main { font-size: 18px; font-weight: 800; margin: 0; }
+        .header-sub { font-size: 11px; color: #e0e0e0; margin-top: 3px; }
+        .logout-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); margin-bottom: 20px; border-top: 4px solid var(--primary); }
+        h3 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 18px;}
+        
+        .stats-container { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .stat-box { flex: 1; min-width: 140px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); text-align: center; border-bottom: 4px solid var(--primary); }
+        .stat-value { font-size: 28px; font-weight: 900; color: var(--primary); margin: 10px 0 5px 0; }
+        .stat-label { font-size: 11px; color: #666; text-transform: uppercase; font-weight: bold; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; font-size: 13px;}
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        button { padding: 10px 15px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s;}
+        button:hover { background: var(--primary-hover); }
+        .btn-green { background: var(--success); }
+        .btn-orange { background: var(--warning); color: #fff; }
+        .btn-red { background: var(--danger); }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;}
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f7f6; color: var(--primary); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px;}
+    </style>
+</head>
+<body>
+
+    <div id="loginSection">
+        <div class="login-card">
+            <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue" class="logo">
+            <h2 class="portal-title">ADMIN LOGIN</h2>
+            <div class="subtitle">Institution Control Centre</div>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" class="login-input" placeholder="Admin Username" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" class="login-input" placeholder="Password" required>
+                </div>
+                <button type="submit" id="loginBtn" class="login-btn">Secure Login <i class="fas fa-sign-in-alt"></i></button>
+            </form>
+            <div id="errorMsg" class="error"></div>
+        </div>
+    </div>
+
+    <div id="dashboardSection">
+        <div class="header">
+            <div>
+                <div class="header-top">ResultVue Result Portal</div>
+                <div class="header-main">CONTROL CENTRE</div>
+                <div class="header-sub" id="displaySchoolName">Loading...</div>
+            </div>
+            <button onclick="performLogout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <div class="container">
+            <div class="grid-2">
+                <div class="card" style="border-top-color: var(--success);">
+                    <h3 style="color: var(--success);"><i class="fas fa-satellite-dish"></i> Portal Status & Modes</h3>
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid #eee;">
+                        <div style="font-size: 12px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Current Status</div>
+                        <div id="modeStatus" style="font-size: 22px; font-weight: 900; color: #333;">Checking...</div>
+                    </div>
+                    <button class="btn-outline" style="width: 100%; margin-bottom: 15px;" onclick="toggleModeButtons()">🔄 Change Portal Mode</button>
+                    <div id="modeButtons" style="display: none; gap: 10px; margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                        <button class="btn-green" style="flex: 1; padding: 8px; font-size: 12px;" onclick="setModeWithWarning('live')">Publish Live</button>
+                        <button class="btn-orange" style="flex: 1; padding: 8px; font-size: 12px;" onclick="setModeWithWarning('pause')">Pause (Wait)</button>
+                        <button class="btn-red" style="flex: 1; padding: 8px; font-size: 12px;" onclick="setModeWithWarning('close')">Close Portal</button>
+                    </div>
+                </div>
+
+                <div class="card" style="border-top-color: var(--warning);">
+                    <h3 style="color: var(--warning);"><i class="fas fa-link"></i> Portal Links & Database</h3>
+                    <div style="background: #eef2f5; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border-left: 4px solid var(--warning);">
+                        <div style="color: #666; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Public Result Portal</div>
+                        <a href="#" id="publicLink" target="_blank" style="color: var(--primary); font-weight: bold; text-decoration: none;">🌐 Open Public Link</a>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn-outline" style="flex: 1; padding: 10px 5px; font-size: 12px;" onclick="clearCache()">🧹 Clear Cache</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Portal Analytics</h3>
+                <div class="stats-container" id="analyticsArea">
+                    <div class="stat-box" style="border-bottom-color: var(--primary);">
+                        <div class="stat-label">Total Students</div>
+                        <div class="stat-value" id="statTotal">--</div>
+                    </div>
+                    <div class="stat-box" style="border-bottom-color: var(--success);">
+                        <div class="stat-label">Total Passed</div>
+                        <div class="stat-value" id="statPassed" style="color: var(--success);">--</div>
+                    </div>
+                    <div class="stat-box" style="border-bottom-color: var(--danger);">
+                        <div class="stat-label">Total Failed</div>
+                        <div class="stat-value" id="statFailed" style="color: var(--danger);">--</div>
+                    </div>
+                    <div class="stat-box" style="border-bottom-color: var(--warning);">
+                        <div class="stat-label">Portal Views</div>
+                        <div class="stat-value" id="statViews" style="color: var(--warning);">--</div>
+                    </div>
+                </div>
+
+                <button onclick="toggleDetailedStats()" class="btn-outline" style="width: 100%; margin-bottom: 10px;">📉 Get Detailed Information</button>
+                
+                <div id="detailedStatsArea" style="display: none; overflow-x: auto; margin-bottom: 15px;">
+                    <table>
+                        <thead><tr><th>Class</th><th>Total Students</th><th>Passed</th><th>Failed</th><th>Searches/Views</th></tr></thead>
+                        <tbody id="detailedStatsBody"><tr><td colspan="5" style="text-align:center;">Loading details...</td></tr></tbody>
+                    </table>
+                </div>
+                <button style="background: #e0e0e0; color: #333; font-size: 12px; padding: 6px 12px; border:none; border-radius:4px; cursor:pointer;" onclick="callApi('resetAnalytics', {}, 'Views Reset successfully')">Reset Analytics</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-cogs"></i> Advanced Settings & Customization</h3>
+                <div class="grid-2">
+                    <form id="settingsForm" onsubmit="saveSettings(event)">
+                        <div class="form-group"><label>Institution Name</label><input type="text" id="instName" required></div>
+                        <div class="grid-2" style="gap: 10px;">
+                            <div class="form-group"><label>Short Name</label><input type="text" id="shortName" required></div>
+                            <div class="form-group"><label>Exam Year</label><input type="text" id="examYear" required></div>
+                        </div>
+                        <div class="form-group"><label>Exam Title</label><input type="text" id="examTitle" required></div>
+                        <div style="background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #eee;">
+                            <div class="form-group"><label>Publish Date & Time (YYYY/MM/DD HH:MM:SS)</label><input type="text" id="pubDate" placeholder="2026/01/01 08:00:00"></div>
+                            <div class="form-group"><label>Publish Date Display Text</label><input type="text" id="pubDateText"></div>
+                            <div class="form-group"><label>Portal Auto-Close Date & Time</label><input type="text" id="closeDate" placeholder="2026/12/31 23:59:59"></div>
+                        </div>
+                        <div class="form-group"><label>Scrolling Notification</label><textarea id="liveNotice" rows="3"></textarea></div>
+                        <div class="form-group"><label>Head of Institution (For Print)</label><input type="text" id="headMaster"></div>
+                        <button type="submit" id="saveSetBtn" style="width: 100%;">Save Settings</button>
+                    </form>
+
+                    <div>
+                        <div class="form-group">
+                            <label>Institution Logo</label>
+                            <input type="file" id="logoInput" accept="image/png, image/jpeg" onchange="openCropModal(event)">
+                        </div>
+                        <div class="logo-container" id="logoContainer" style="display:none; text-align:center; padding: 10px; border: 1px dashed #ccc; border-radius: 8px;">
+                            <img id="logoPreview" src="" style="margin-bottom: 10px; width:100px; height:100px; object-fit:contain;">
+                            <br>
+                            <button class="btn-red" style="padding: 6px 12px; font-size: 11px;" onclick="uploadLogoStr('')">🗑️ Delete Logo</button>
+                        </div>
+
+                        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                            <h4 style="margin-top:0; color: var(--primary);">Bulk Print Results</h4>
+                            <select id="bulkClassSelect" style="margin-bottom: 10px; width:100%; padding:10px;"><option value="" disabled selected>Loading...</option></select>
+                            <button style="width: 100%;" onclick="openBulkPrint()">🖨️ Generate Bulk PDF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cropModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top: 0; color: var(--primary);">Adjust Logo</h3>
+            <div style="max-height: 300px; overflow: hidden; margin-bottom: 15px; background: #eee;"><img id="imageToCrop" src=""></div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-green" style="flex: 1;" onclick="cropAndSave()">Crop & Save</button>
+                <button class="btn-red" style="flex: 1;" onclick="closeCropModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxNL1AyCgayAFaVIuNErX5Bm7OpkWHpcPs7i1XBXB-gIZUu1jxG88gEYeHaVYEMV2INAg/exec";
+        
+        let CURRENT_SCHOOL_ID = localStorage.getItem('activeSchoolId');
+        let AUTH_TOKEN = localStorage.getItem('authToken_' + CURRENT_SCHOOL_ID);
+        let cropper;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (CURRENT_SCHOOL_ID && AUTH_TOKEN) {
+                showDashboard();
+            }
+        });
+
+        // --- 1. CORE API FETCHER ---
+        async function fetchSecure(action, payload = {}) {
+            const body = { action, schoolId: CURRENT_SCHOOL_ID, token: AUTH_TOKEN, ...payload };
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
+                const data = await response.json();
+                
+                if (data.success === false && data.message && data.message.includes("Unauthorized Request")) {
+                    performLogout(true);
+                    throw new Error("Session Expired");
+                }
+                return data;
+            } catch (error) {
+                console.error("API Error:", error);
+                return { success: false, message: error.message || "Network Error" };
+            }
+        }
+
+        // --- 2. AUTHENTICATION ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            btn.disabled = true;
+
+            const payload = { 
+                action: 'login', 
+                username: document.getElementById('username').value, 
+                password: document.getElementById('password').value 
+            };
+
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await response.json();
+
+                if (result.success) {
+                    CURRENT_SCHOOL_ID = result.schoolId;
+                    AUTH_TOKEN = result.token;
+                    localStorage.setItem('activeSchoolId', CURRENT_SCHOOL_ID);
+                    localStorage.setItem('authToken_' + CURRENT_SCHOOL_ID, AUTH_TOKEN);
+                    localStorage.setItem('schoolName', result.schoolName);
+                    
+                    showDashboard();
+                } else {
+                    document.getElementById('errorMsg').innerText = result.message;
+                    btn.innerHTML = 'Secure Login <i class="fas fa-sign-in-alt"></i>';
+                    btn.disabled = false;
+                }
+            } catch(e) {
+                document.getElementById('errorMsg').innerText = "Network connection failed.";
+                btn.innerHTML = 'Secure Login <i class="fas fa-sign-in-alt"></i>';
+                btn.disabled = false;
+            }
+        }
+
+        function performLogout(silent = false) {
+            localStorage.removeItem('activeSchoolId');
+            localStorage.removeItem('authToken_' + CURRENT_SCHOOL_ID);
+            
+            if(silent) {
+                Swal.fire({ title: 'Session Expired', text: 'Please login again.', icon: 'warning', confirmButtonColor: '#12224A' }).then(() => location.reload());
+            } else {
+                Swal.fire({
+                    title: 'Logout?', text: 'Securely end session?', icon: 'question',
+                    showCancelButton: true, confirmButtonColor: '#E31837'
+                }).then((res) => { if(res.isConfirmed) location.reload(); });
+            }
+        }
+
+        // --- 3. DASHBOARD INITIALIZATION ---
+        function showDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('displaySchoolName').innerText = localStorage.getItem('schoolName') || CURRENT_SCHOOL_ID;
+            
+            // Set up Public Link - portal.html എന്ന് മാറ്റിയതിനാൽ അതിനനുസരിച്ച് ലിങ്ക് നൽകുന്നു
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+            document.getElementById('publicLink').href = `${baseUrl}/portal.html?school=${CURRENT_SCHOOL_ID}`;
+
+            initDashboardData();
+        }
+
+        async function initDashboardData() {
+            // 1. Get Analytics
+            const analytics = await fetchSecure('getDashboardData');
+            if(analytics.success) updateAnalyticsUI(analytics.data);
+
+            // 2. Get Status
+            const status = await fetchSecure('getPortalStatus');
+            if(status.mode) {
+                document.getElementById('modeStatus').innerText = status.mode;
+                document.getElementById('modeStatus').style.color = status.color;
+            }
+
+            // 3. Get Classes for Bulk Print
+            const dynData = await fetchSecure('getDynamicSettings');
+            if(dynData.classes) {
+                const select = document.getElementById('bulkClassSelect');
+                select.innerHTML = '<option value="" disabled selected>-- Select a Class --</option>';
+                dynData.classes.forEach(c => select.innerHTML += `<option value="${c}">${c}</option>`);
+            }
+
+            // 4. Fetch Public Config to pre-fill settings form
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getPublicConfig', schoolId: CURRENT_SCHOOL_ID }) });
+                const configData = await res.json();
+                if(configData.success && configData.config) {
+                    const c = configData.config;
+                    document.getElementById('instName').value = c.INSTITUTION_NAME || '';
+                    document.getElementById('shortName').value = c.SHORT_NAME || '';
+                    document.getElementById('examYear').value = c.EXAM_YEAR || '';
+                    document.getElementById('examTitle').value = c.EXAM_TITLE || '';
+                    document.getElementById('pubDate').value = c.PUBLISH_DATE || '';
+                    document.getElementById('pubDateText').value = c.PUBLISH_DATE_TEXT || '';
+                    document.getElementById('closeDate').value = c.CLOSE_DATE || '';
+                    document.getElementById('liveNotice').value = c.LIVE_NOTIFICATION || '';
+                    document.getElementById('headMaster').value = c.HEAD_MASTER || '';
+                    
+                    if(c.LOGO_BASE64 && c.LOGO_BASE64 !== "") {
+                        document.getElementById('logoPreview').src = c.LOGO_BASE64;
+                        document.getElementById('logoContainer').style.display = "block";
+                    }
+                }
+            } catch(e) { console.error("Error fetching config for settings form"); }
+        }
+
+        function updateAnalyticsUI(data) {
+            let total = 0, passed = 0, failed = 0, views = 0, tbody = "";
+            if(data && data.length > 0) {
+                data.forEach(d => { 
+                    total += d.total; passed += d.passed; failed += d.failed; views += (d.views || 0); 
+                    tbody += `<tr><td>${d.class}</td><td>${d.total}</td><td style="color:green; font-weight:bold;">${d.passed}</td><td style="color:red; font-weight:bold;">${d.failed}</td><td>${(d.views||0)}</td></tr>`;
+                });
+            } else { tbody = "<tr><td colspan='5' style='text-align:center;'>No data found.</td></tr>"; }
+            
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statPassed').innerText = passed;
+            document.getElementById('statFailed').innerText = failed;
+            document.getElementById('statViews').innerText = views;
+            document.getElementById('detailedStatsBody').innerHTML = tbody;
+        }
+
+        function toggleModeButtons() {
+            const el = document.getElementById('modeButtons');
+            el.style.display = el.style.display === "none" ? "flex" : "none";
+        }
+        function toggleDetailedStats() {
+            const el = document.getElementById('detailedStatsArea');
+            el.style.display = el.style.display === "none" ? "block" : "none";
+        }
+
+        async function callApi(action, payload, successMsg) {
+            Swal.showLoading();
+            const res = await fetchSecure(action, payload);
+            if(res.success) {
+                Swal.fire({title: 'Success!', text: successMsg || res.message, icon: 'success', confirmButtonColor: '#12224A'});
+                initDashboardData();
+            } else {
+                Swal.fire({title: 'Error', text: res.message, icon: 'error', confirmButtonColor: '#12224A'});
+            }
+        }
+
+        function setModeWithWarning(mode) {
+            Swal.fire({ title: `Confirm ${mode.toUpperCase()}`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#12224A' }).then((result) => {
+                if (result.isConfirmed) {
+                    callApi('setPortalMode', { mode }, 'Portal mode updated.');
+                    document.getElementById('modeButtons').style.display = "none";
+                }
+            });
+        }
+        
+        function clearCache() {
+            Swal.fire({ title: 'Clear Cache?', text: "Do this after updating marks in Google Sheet.", icon: 'info', showCancelButton: true, confirmButtonColor: '#12224A' }).then((result) => {
+                if (result.isConfirmed) callApi('clearCache', {}, 'Cache cleared successfully.');
+            });
+        }
+
+        // --- 4. SETTINGS & LOGO ---
+        async function saveSettings(e) {
+            e.preventDefault();
+            const payload = {
+                settings: {
+                    INSTITUTION_NAME: document.getElementById('instName').value,
+                    SHORT_NAME: document.getElementById('shortName').value,
+                    EXAM_YEAR: document.getElementById('examYear').value,
+                    EXAM_TITLE: document.getElementById('examTitle').value,
+                    PUBLISH_DATE: document.getElementById('pubDate').value,
+                    PUBLISH_DATE_TEXT: document.getElementById('pubDateText').value,
+                    CLOSE_DATE: document.getElementById('closeDate').value,
+                    LIVE_NOTIFICATION: document.getElementById('liveNotice').value,
+                    HEAD_MASTER: document.getElementById('headMaster').value
+                }
+            };
+            callApi('saveSettings', payload, 'Settings saved successfully');
+        }
+
+        function openCropModal(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imageToCrop').src = e.target.result;
+                document.getElementById('cropModal').style.display = "flex";
+                if (cropper) cropper.destroy(); 
+                cropper = new Cropper(document.getElementById('imageToCrop'), { aspectRatio: 1, viewMode: 1, autoCropArea: 1 });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function closeCropModal() {
+            document.getElementById('cropModal').style.display = "none";
+            document.getElementById('logoInput').value = ""; 
+            if (cropper) cropper.destroy();
+        }
+
+        async function cropAndSave() {
+            if (!cropper) return;
+            const canvas = cropper.getCroppedCanvas({ width: 200, height: 200, fillColor: '#fff' });
+            const base64 = canvas.toDataURL('image/jpeg', 0.7);
+            closeCropModal();
+            uploadLogoStr(base64);
+        }
+
+        async function uploadLogoStr(base64Str) {
+            Swal.showLoading();
+            const res = await fetchSecure('saveLogo', { base64String: base64Str });
+            if(res.success) {
+                if(base64Str === "") {
+                    document.getElementById('logoContainer').style.display = "none";
+                    document.getElementById('logoPreview').src = "";
+                    Swal.fire({title: 'Deleted!', text: 'Logo removed.', icon: 'success', confirmButtonColor: '#12224A'});
+                } else {
+                    document.getElementById('logoPreview').src = base64Str;
+                    document.getElementById('logoContainer').style.display = "block";
+                    Swal.fire({title: 'Success!', text: 'Logo Updated.', icon: 'success', confirmButtonColor: '#12224A'});
+                }
+            } else {
+                Swal.fire({title: 'Error', text: res.message, icon: 'error', confirmButtonColor: '#12224A'});
+            }
+        }
+
+        function openBulkPrint() {
+            const cls = document.getElementById('bulkClassSelect').value;
+            if(!cls) { Swal.fire({title: 'Error', text: 'Select a class first!', icon: 'error', confirmButtonColor: '#12224A'}); return; }
+            
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+            window.open(`${baseUrl}/BulkPrint.html?school=${CURRENT_SCHOOL_ID}&class=${encodeURIComponent(cls)}`, "_blank");
+        }
+    </script>
+</body>
+</html>
