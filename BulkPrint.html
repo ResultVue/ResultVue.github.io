@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Print | ResultVue</title>
+    
+    <style>
+        :root {
+            --primary: #12224A;
+            --success: #00A651;
+            --warning: #F58220;
+            --danger: #E31837;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        
+        #loading { text-align: center; margin-top: 100px; font-size: 16px; color: var(--primary); font-weight: bold; background: white; padding: 30px; border-radius: 10px; max-width: 400px; margin-left: auto; margin-right: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 4px solid var(--warning);}
+        
+        #printArea { display: none; }
+        
+        .print-btn-container { text-align: center; margin-bottom: 30px; display: none; }
+        .print-btn { background: var(--primary); color: white; padding: 12px 30px; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-transform: uppercase; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: 0.3s; }
+        .print-btn:hover { background: #0A1430; transform: translateY(-2px); }
+
+        @media screen {
+            .page-break { background: white; max-width: 800px; margin: 0 auto 30px; padding: 30px; border: 2px solid var(--primary); border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);}
+        }
+        @media print {
+            @page { size: A4 portrait; margin: 15mm; }
+            body { background: white !important; padding: 0 !important; margin: 0 !important; }
+            body > *:not(#printArea) { display: none !important; }
+            #printArea { display: block !important; width: 100% !important; }
+            .page-break { page-break-after: always; margin: 0 !important; padding: 0 !important; border: none !important; box-shadow: none !important;}
+            .page-break:last-child { page-break-after: avoid; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading">
+        <div style="font-size: 30px; margin-bottom: 10px;">⏳</div>
+        Fetching Class Data...<br>
+        <span style="font-size: 12px; color: #888; font-weight: normal;">Please wait while we generate the bulk report.</span>
+    </div>
+
+    <div class="print-btn-container" id="printBtnContainer">
+        <button class="print-btn" onclick="window.print()">🖨️ Print All Results</button>
+    </div>
+
+    <div id="printArea"></div>
+
+    <script>
+        // ⭐️ പുതിയ API URL
+        const API_URL = "https://script.google.com/macros/s/AKfycbxNL1AyCgayAFaVIuNErX5Bm7OpkWHpcPs7i1XBXB-gIZUu1jxG88gEYeHaVYEMV2INAg/exec";
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const CURRENT_SCHOOL_ID = urlParams.get('school');
+        const CURRENT_CLASS = urlParams.get('class');
+        const AUTH_TOKEN = localStorage.getItem('authToken_' + CURRENT_SCHOOL_ID);
+
+        let APP_CONFIG = {};
+        let BULK_DATA = null;
+
+        document.addEventListener('DOMContentLoaded', initBulkPrint);
+
+        async function initBulkPrint() {
+            const loader = document.getElementById('loading');
+            
+            if (!CURRENT_SCHOOL_ID || !CURRENT_CLASS || !AUTH_TOKEN) {
+                loader.innerHTML = `<div style="font-size: 30px; margin-bottom: 10px;">🚫</div><span style="color:red;">Unauthorized Access or Missing Parameters.</span><br><span style="font-size: 12px; color: #666; font-weight: normal;">Please generate this page directly from the Admin Control Centre.</span>`;
+                return;
+            }
+
+            document.title = `Bulk Print - ${CURRENT_CLASS} | ResultVue`;
+
+            try {
+                // 1. കോൺഫിഗറേഷനുകൾ സ്വീകരിക്കുന്നു (Logo, Settings etc.)
+                const configRes = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getPublicConfig', schoolId: CURRENT_SCHOOL_ID })
+                });
+                const configData = await configRes.json();
+                
+                if (configData.success) {
+                    APP_CONFIG = configData.config;
+                } else {
+                    throw new Error("Failed to load school configuration.");
+                }
+
+                // 2. ക്ലാസ്സിലെ ഡാറ്റ സുരക്ഷിതമായി ഫെച്ച് ചെയ്യുന്നു (ടോക്കൺ ഉപയോഗിച്ച്)
+                const bulkRes = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'getBulkPrintData',
+                        schoolId: CURRENT_SCHOOL_ID,
+                        token: AUTH_TOKEN,
+                        className: CURRENT_CLASS
+                    })
+                });
+                const bulkData = await bulkRes.json();
+
+                if (bulkData.success) {
+                    BULK_DATA = bulkData;
+                    if(BULK_DATA.students.length === 0) {
+                        loader.innerHTML = `<div style="font-size: 30px; margin-bottom: 10px;">📭</div><span style="color:var(--warning);">No Students Found!</span><br><span style="font-size: 12px; color: #666; font-weight: normal;">There is no data available for class ${CURRENT_CLASS}.</span>`;
+                        return;
+                    }
+                    renderBulkPrint();
+                } else {
+                    throw new Error(bulkData.message || "Session Expired or Invalid Token.");
+                }
+            } catch (error) {
+                loader.innerHTML = `<div style="font-size: 30px; margin-bottom: 10px;">⚠️</div><span style="color:red;">System Error:</span><br><span style="font-size: 13px; color: #666; font-weight: normal;">${error.message}</span>`;
+            }
+        }
+
+        function renderBulkPrint() {
+            let htmlContent = "";
+            const maxM = BULK_DATA.maxMark;
+            const maxA = BULK_DATA.maxAttendance;
+
+            BULK_DATA.students.forEach(studentRow => {
+                let parsed = { name: "--", rank: "--", totalStr: "--", totalPct: "--", resVal: "--", attStr: "--", attPct: "--", isPass: false };
+                let basicInfo = "", tableRows = "";
+
+                BULK_DATA.headers.forEach((header, i) => {
+                    let val = studentRow[i] || "--";
+                    let hUp = String(header).toUpperCase();
+
+                    if (hUp.includes('NAME')) parsed.name = val;
+                    else if (hUp.includes('RANK')) parsed.rank = val;
+                    else if (hUp.includes('ATTENDANCE')) parsed.attStr = val;
+
+                    if ((hUp.includes('PERCENT') || hUp.includes('%')) && typeof val === 'number') {
+                        val = (val <= 1 && val >= 0) ? Math.round(val * 100) + '%' : Math.round(val) + '%';
+                    }
+                    else if ((hUp.includes('TOTAL') || (hUp.includes('MARK') && !hUp.includes('REMARK'))) && maxM && val !== '--') {
+                        parsed.totalStr = val;
+                        val = `${val} / ${maxM}`;
+                    }
+
+                    if (hUp.includes('REMARK') || hUp.includes('RESULT') || hUp.includes('STATUS')) {
+                        parsed.resVal = String(val).toUpperCase();
+                        parsed.isPass = parsed.resVal.includes('PASS') || parsed.resVal.includes('ELIGIBLE') || parsed.resVal.includes('PROMOTED');
+                        val = parsed.resVal;
+                    }
+
+                    if (hUp.includes('NAME') || hUp.includes('ROLL') || hUp.includes('ADMISSION') || hUp.includes('GENDER') || hUp.includes('DOB')) {
+                        basicInfo += `<div style="width: 50%; margin-bottom: 8px; font-size: 13px;"><b>${header}:</b> <span style="color:var(--primary);">${val}</span></div>`;
+                    } else if (!hUp.includes('ATTENDANCE') && !hUp.includes('TOTAL') && !hUp.includes('REMARK') && !hUp.includes('RESULT') && !hUp.includes('STATUS') && !hUp.includes('RANK') && !hUp.includes('MARK') && !hUp.includes('%') && !hUp.includes('PERCENT')) {
+                        tableRows += `<tr><td style="border: 1px solid #ddd; padding: 10px;">${header}</td><td style="border: 1px solid #ddd; padding: 10px;"><b>${val}</b></td></tr>`;
+                    }
+                });
+
+                if(parsed.attStr !== '--' && maxA && !isNaN(parsed.attStr) && !isNaN(maxA)) {
+                    parsed.attPct = Math.round((Number(parsed.attStr) / Number(maxA)) * 100) + '%';
+                    parsed.attStr = `${parsed.attStr} / ${maxA}`;
+                }
+                if(parsed.totalStr !== '--' && maxM && !isNaN(parsed.totalStr) && !isNaN(maxM)) {
+                    parsed.totalPct = Math.round((Number(parsed.totalStr) / Number(maxM)) * 100) + '%';
+                    parsed.totalStr = `${parsed.totalStr} / ${maxM}`;
+                }
+
+                let rankBoxHTML = "";
+                if (parsed.rank !== "--" && parsed.rank !== "") {
+                    rankBoxHTML = `<div style="flex: 1; background: #fff8e1; border: 1.5px solid var(--warning); border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 4px 8px rgba(245,130,32,0.15);"><div style="font-size: 11px; color: var(--warning); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Class Rank</div><div style="font-size: 22px; color: #D66D18; font-weight: bold; margin: 5px 0;">${parsed.rank}</div><div style="font-size: 12px; color: #888;">Position</div></div>`;
+                }
+
+                let bannerColor = parsed.isPass ? '#e8f5e9' : '#ffebee';
+                let bannerBorder = parsed.isPass ? '#c8e6c9' : '#ffcdd2';
+                let bannerTextCol = parsed.isPass ? '#00A651' : '#c62828';
+                let bannerText = parsed.isPass ? 'ELIGIBLE FOR HIGHER STUDIES' : 'NOT ELIGIBLE FOR HIGHER STUDIES';
+                if(parsed.resVal === '--') { bannerColor = '#f5f5f5'; bannerBorder = '#e0e0e0'; bannerTextCol = '#555'; bannerText = 'RESULT PENDING'; }
+
+                let watermarkHTML = ""; let headerLogoHTML = "";
+                if (APP_CONFIG.LOGO_BASE64 && APP_CONFIG.LOGO_BASE64.trim() !== "") {
+                    watermarkHTML = `<img src="${APP_CONFIG.LOGO_BASE64}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; opacity: 0.05; z-index: 0; pointer-events: none;">`;
+                    headerLogoHTML = `<img src="${APP_CONFIG.LOGO_BASE64}" style="width: 75px; height: 75px; object-fit: contain; margin-bottom: 10px;">`;
+                }
+
+                let studentHTML = `
+                    <div class="page-break">
+                        <div style="border: 2px solid var(--primary); border-radius: 10px; padding: 30px; font-family: 'Segoe UI', sans-serif; color: #333; max-width: 800px; margin: 0 auto; position: relative; overflow: hidden; background: white;">
+                            ${watermarkHTML}
+                            <div style="position: relative; z-index: 1;">
+                                <div style="text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px;">
+                                    ${headerLogoHTML}
+                                    <h2 style="font-size: 24px; color: var(--primary); margin: 0; text-transform: uppercase; font-weight: 800;">${APP_CONFIG.INSTITUTION_NAME_UPPER}</h2>
+                                    <p style="font-size: 15px; color: #555; margin: 5px 0 0 0; font-weight: bold;">${APP_CONFIG.EXAM_TITLE}</p>
+                                    <div style="font-size: 14px; background: var(--primary); color: white; display: inline-block; padding: 6px 20px; border-radius: 20px; margin-top: 10px; font-weight: bold;">CLASS: ${CURRENT_CLASS}</div>
+                                </div>
+                                
+                                <div style="display: flex; flex-wrap: wrap; background: #f9f9f9; padding: 15px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 20px;">
+                                    ${basicInfo}
+                                </div>
+                                
+                                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                                    <div style="flex: 1; background: #fff; border: 1.5px solid var(--primary); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Total Attendance</div>
+                                        <div style="font-size: 18px; color: var(--primary); font-weight: bold; margin: 5px 0;">${parsed.attStr}</div>
+                                        <div style="font-size: 12px; color: #888;">Percentage: <b style="color:#333;">${parsed.attPct}</b></div>
+                                    </div>
+                                    <div style="flex: 1; background: #fff; border: 1.5px solid var(--primary); border-radius: 8px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Total Marks Obtained</div>
+                                        <div style="font-size: 18px; color: var(--primary); font-weight: bold; margin: 5px 0;">${parsed.totalStr}</div>
+                                        <div style="font-size: 12px; color: #888;">Percentage: <b style="color:#333;">${parsed.totalPct}</b></div>
+                                    </div>
+                                    ${rankBoxHTML}
+                                </div>
+                                
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: left; font-size: 14px;">
+                                    <tr><th style="border: 1px solid #ddd; padding: 10px; background: #f4f4f4; width: 70%;">Subjects Evaluated</th><th style="border: 1px solid #ddd; padding: 10px; background: #f4f4f4;">Marks</th></tr>
+                                    ${tableRows}
+                                </table>
+                                
+                                <div style="background: ${bannerColor}; color: ${bannerTextCol}; border: 1px solid ${bannerBorder}; padding: 12px; text-align: center; font-weight: bold; font-size: 15px; border-radius: 8px; margin-bottom: 30px; letter-spacing: 1px;">
+                                    ${bannerText}
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; margin-top: 40px; font-size: 14px; font-weight: bold;">
+                                    <div style="text-align: center; border-top: 1px solid #333; padding-top: 5px; width: 200px;">Class Teacher<br><span style="font-weight:normal; font-size:12px;">(${BULK_DATA.teacher})</span></div>
+                                    <div style="text-align: center; border-top: 1px solid #333; padding-top: 5px; width: 200px;">Head of Institution<br><span style="font-weight:normal; font-size:12px;">(${APP_CONFIG.HEAD_MASTER})</span></div>
+                                </div>
+                                <div style="text-align: center; font-size: 9px; color: #aaa; margin-top: 30px; font-style: italic;">Automatically generated from ${APP_CONFIG.PORTAL_TITLE} by ResultVue on ${new Date().toLocaleDateString('en-GB')}</div>
+                            </div>
+                        </div>
+                    </div>`;
+                
+                htmlContent += studentHTML;
+            });
+
+            document.getElementById('loading').style.display = "none";
+            document.getElementById('printArea').innerHTML = htmlContent;
+            document.getElementById('printArea').style.display = "block";
+            document.getElementById('printBtnContainer').style.display = "block";
+            
+            // ബൾക്ക് പ്രിൻ്റ് ഡാറ്റ ലോഡ് ചെയ്ത ഉടനെ തന്നെ പ്രിൻ്റ് വിൻഡോ തുറക്കണമെങ്കിൽ താഴെയുള്ള കോഡ് ഉപയോഗിക്കാം.
+            // setTimeout(() => { window.print(); }, 1000);
+        }
+    </script>
+</body>
+</html>
