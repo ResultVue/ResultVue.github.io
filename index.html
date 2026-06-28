@@ -350,14 +350,14 @@
             <div class="row g-4 justify-content-between align-items-center">
                 <div class="col-md-4">
                     <div class="footer-logo mb-2">
-                        <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue" style="height: 40px; object-fit: contain;">
+                        <img id="secretAdminTrigger" src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue" style="height: 40px; object-fit: contain; cursor: default;">
                     </div>
                     <p class="small text-white-50 mt-3">Empowering institutions with smart and professional result management solutions.</p>
                 </div>
                 <div class="col-md-5 text-md-end">
                     <p class="mb-1">Email: <strong><a href="mailto:resultvue@gmail.com">resultvue@gmail.com</a></strong></p>
                     <p class="mb-4">WhatsApp: <strong><a href="https://wa.me/918138860044" target="_blank">+91 81388 60044</a></strong></p>
-                    <p class="small text-white-50 mb-0">© 2026 ResultVue. Powered by Google Apps Script & GitHub.</p>
+                    <p class="small text-white-50 mb-0">© 2026 ResultVue.</p>
                 </div>
             </div>
         </div>
@@ -479,6 +479,33 @@
             const endX = e.changedTouches[0].screenX;
             if (endX < touchStartX - 50) changeImage(1);
             if (endX > touchStartX + 50) changeImage(-1);
+        });
+    </script>
+    <script>
+        // 1. Secret Click Method (ലോഗോയിൽ 5 തവണ വേഗത്തിൽ ക്ലിക്ക് ചെയ്യുക)
+        let triggerCount = 0;
+        const adminTrigger = document.getElementById('secretAdminTrigger');
+        
+        if(adminTrigger) {
+            adminTrigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                triggerCount++;
+                
+                if (triggerCount === 5) {
+                    window.location.href = 'Admin.html';
+                }
+                
+                // 2 സെക്കൻഡിനുള്ളിൽ വീണ്ടും ക്ലിക്ക് ചെയ്തില്ലെങ്കിൽ കൗണ്ട് റീസെറ്റ് ആകും
+                setTimeout(() => { triggerCount = 0; }, 2000);
+            });
+        }
+
+        // 2. Keyboard Shortcut Method (Ctrl + Shift + A ഒരുമിച്ച് പ്രസ്സ് ചെയ്യുക)
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'a' || e.key === 'A')) {
+                e.preventDefault(); 
+                window.location.href = 'Admin.html';
+            }
         });
     </script>
 </body>
