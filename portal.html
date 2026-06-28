@@ -190,7 +190,7 @@
     <footer id="footer-section" style="text-align: center; width: 100%; max-width: 450px; margin: 30px auto 10px auto; padding: 20px 0; clear: both;">
         <div style="margin-bottom: 12px;">
            <p style="font-size: 11px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">Powered by</p>
-            <a href="https://sites.google.com/view/resultvue/" target="_blank" title="Visit Our Portal">
+            <a href="index.html" title="Visit ResultVue">
                 <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue Logo" style="max-height: 45px; width: auto;">
             </a>
         </div>
@@ -311,6 +311,12 @@
     }
 
     function startPortalLogic() {
+        const IS_PREVIEW = new URLSearchParams(window.location.search).get('view') === 'test';
+if (IS_PREVIEW) {
+    document.getElementById('searchPage').style.display = "block";
+    document.getElementById('countdownPage').style.display = "none";
+    return;
+}
         let safeDateString = (APP_CONFIG.PUBLISH_DATE || "1999/01/01 00:00:00").replace(/-/g, '/');
         const publishDate = new Date(safeDateString).getTime();
         let safeCloseString = (APP_CONFIG.CLOSE_DATE || '2099/12/31 23:59:59').replace(/-/g, '/');
