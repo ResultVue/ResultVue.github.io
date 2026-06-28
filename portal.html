@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Result Portal | ResultVue</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
    
     <style>
@@ -224,17 +225,16 @@
             return;
         }
 
-        // Fake loading progress for UX
+        // പ്രോഗ്രസ് ബാറിന്റെ വേഗത കൂട്ടിയിരിക്കുന്നു
         let progress = 0;
         const progressInterval = setInterval(() => {
-            progress += Math.floor(Math.random() * 10) + 5;
-            if(progress > 85) progress = 85;
+            progress += Math.floor(Math.random() * 15) + 10;
+            if(progress > 90) progress = 90;
             if(document.getElementById('progressBar')) document.getElementById('progressBar').style.width = progress + '%';
             if(document.getElementById('progressText')) document.getElementById('progressText').innerText = progress + '%';
-        }, 150);
+        }, 50);
 
         try {
-            // ബാക്ക്-എൻഡിൽ നിന്നും കോൺഫിഗറേഷനുകൾ സ്വീകരിക്കുന്നു
             const response = await fetch(API_URL, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'getPublicConfig', schoolId: CURRENT_SCHOOL_ID })
@@ -242,26 +242,21 @@
             const data = await response.json();
             
             clearInterval(progressInterval);
-            document.getElementById('progressBar').style.width = '100%';
-            document.getElementById('progressText').innerText = '100%';
 
-            setTimeout(() => {
-                if(data.success) {
-                    APP_CONFIG = data.config;
-                    IS_LIVE_MODE = data.status.isLive;
-                    DYNAMIC_CLASSES = data.classes;
-                    
-                    populateUI();
-                    document.getElementById('initialLoader').style.opacity = '0';
-                    setTimeout(() => { 
-                        document.getElementById('initialLoader').style.display = 'none';
-                        document.getElementById('mainContainer').style.display = 'block';
-                        startPortalLogic(); 
-                    }, 400);
-                } else {
-                    document.getElementById('initialLoader').innerHTML = `<div style="text-align:center; padding:20px; color:#c62828;"><h3>Error</h3><p>${data.message}</p></div>`;
-                }
-            }, 300);
+            // ഡാറ്റ ലഭിച്ച ഉടനെ യാതൊരു ഡിലേയും ഇല്ലാതെ പോർട്ടൽ ഓപ്പൺ ആകുന്നു
+            if(data.success) {
+                APP_CONFIG = data.config;
+                IS_LIVE_MODE = data.status.isLive;
+                DYNAMIC_CLASSES = data.classes;
+                
+                populateUI();
+                
+                document.getElementById('initialLoader').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                startPortalLogic(); 
+            } else {
+                document.getElementById('initialLoader').innerHTML = `<div style="text-align:center; padding:20px; color:#c62828;"><h3>Error</h3><p>${data.message}</p></div>`;
+            }
 
         } catch(error) {
             clearInterval(progressInterval);
