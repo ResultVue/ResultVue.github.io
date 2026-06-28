@@ -507,11 +507,11 @@
                     
                     html += `<tr>
                         <td class="fw-bold text-primary">${sch.School_ID}</td>
-                        <td><b>${sch.School_Name}</b><br><small class="text-muted"><i class="far fa-envelope"></i> ${sch.Email || 'No Email'}</small></td>
+                        <td><a href="portal.html?school=${sch.School_ID}" target="_blank" style="text-decoration: none; color: var(--primary);" title="Open Result Portal"><b>${sch.School_Name} <i class="fas fa-external-link-alt" style="font-size: 11px; margin-left: 3px;"></i></b></a><br><small class="text-muted"><i class="far fa-envelope"></i> ${sch.Email || 'No Email'}</small></td>
                         <td><span class="badge bg-secondary">${sch.Plan || 'N/A'}</span></td>
                         <td>${formatDisplayDate(sch.Expiry_Date)}</td>
                         <td><span class="badge ${statusBadge}">${sch.Status || 'Unknown'}</span></td>
-                        <td><button class="btn btn-sm btn-outline-primary" onclick="openEditModal(${index})"><i class="fas fa-edit"></i> Edit</button></td>
+                        <td>     <button class="btn btn-sm btn-outline-primary me-1" onclick="openEditModal(${index})" title="Edit Details"><i class="fas fa-edit"></i></button>     <button class="btn btn-sm btn-outline-success" onclick="autoLoginToSchool('${sch.School_ID}')" title="Auto Login to School Dashboard"><i class="fas fa-sign-in-alt"></i></button> </td>
                     </tr>`;
                 });
                 tbody.innerHTML = html;
@@ -588,6 +588,25 @@
             } else { Swal.fire('Error', res.message, 'error'); }
             
             btn.innerHTML = '<i class="fas fa-save me-2"></i> Save to Database'; btn.disabled = false;
+        }
+
+        async function autoLoginToSchool(schoolId) {
+            Swal.showLoading();
+            const res = await apiCall('masterLoginToSchool', { schoolId: schoolId });
+            
+            if (res.success) {
+                // ആ സ്കൂളിന്റെ അഡ്മിൻ ആയി ബ്രൗസറിൽ ലോഗിൻ ചെയ്യുന്നു
+                localStorage.setItem('activeSchoolId', res.schoolId);
+                localStorage.setItem('authToken_' + res.schoolId, res.token);
+                localStorage.setItem('schoolName', res.schoolName);
+                localStorage.setItem('spreadsheetId_' + res.schoolId, res.spreadsheetId);
+                
+                Swal.close();
+                // പുതിയ ടാബിൽ സ്കൂൾ ഡാഷ്‌ബോർഡ് ഓപ്പൺ ആകുന്നു
+                window.open('SchoolDashboard.html', '_blank');
+            } else {
+                Swal.fire('Error', res.message, 'error');
+            }
         }
     </script>
 </body>
