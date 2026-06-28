@@ -1,528 +1,485 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Centre | ResultVue</title>
+    <title>ResultVue | Smart Results. Simple Management.</title>
     
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@300;400;500;600;700&family=Anek+Malayalam:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { 
-            --primary: #12224A; --primary-hover: #0A1430;
-            --success: #00A651; --warning: #F58220; 
-            --danger: #E31837; --bg: #F4F7F9; 
+        :root {
+            --logo-blue: #12224A;
+            --logo-green: #00A651;
+            --logo-orange: #F58220;
+            --bg-light: #F4F7F9;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        
-        /* LOGIN UI */
-        #loginSection { background: linear-gradient(135deg, #f4f7f6 0%, #e8f5e9 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .login-card { background: white; padding: 40px 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 5px solid var(--primary); text-align: center; width: 100%; max-width: 400px; }
-        .login-card .logo { height: 65px; margin-bottom: 15px; object-fit: contain; }
-        .portal-title { color: var(--primary); font-size: 22px; font-weight: 800; margin: 0 0 5px 0; }
-        .subtitle { color: #666; font-size: 12px; margin-bottom: 25px; font-weight: 600; text-transform: uppercase; }
-        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
-        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; }
-        .login-input { width: 100%; padding: 14px 14px 14px 45px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fafafa; }
-        .login-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
-        .error { color: #E31837; font-size: 13px; font-weight: bold; margin-top: 15px; min-height: 20px; }
-        .back-link { display: inline-flex; align-items: center; justify-content: center; margin-top: 25px; color: #666; text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.3s; }
-        .back-link:hover { color: var(--primary); }
 
-        /* DASHBOARD UI */
-        #dashboardSection { display: none; }
-        .header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .header-top { font-size: 11px; color: #8bb3ff; text-transform: uppercase; font-weight: bold;}
-        .header-main { font-size: 18px; font-weight: 800; margin: 0; }
-        .header-sub { font-size: 11px; color: #e0e0e0; margin-top: 3px; }
-        .logout-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
-        
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); margin-bottom: 20px; border-top: 4px solid var(--primary); }
-        h3 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 18px;}
-        
-        .stats-container { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .stat-box { flex: 1; min-width: 140px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); text-align: center; border-bottom: 4px solid var(--primary); }
-        .stat-value { font-size: 28px; font-weight: 900; color: var(--primary); margin: 10px 0 5px 0; }
-        .stat-label { font-size: 11px; color: #666; text-transform: uppercase; font-weight: bold; }
+        html { scroll-behavior: smooth; scroll-padding-top: 150px; }
+        body { font-family: 'Anek Malayalam', 'Anek Latin', sans-serif; color: #333; }
 
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; font-size: 13px;}
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .navbar { background-color: white; border-bottom: 3px solid var(--logo-green); padding: 10px 0; }
+        .navbar-brand img { height: 50px; width: auto; object-fit: contain; }
+        .nav-link { color: var(--logo-blue) !important; font-weight: 600; cursor: pointer; }
         
-        button { padding: 10px 15px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s;}
-        button:hover { background: var(--primary-hover); }
-        .btn-green { background: var(--success); }
-        .btn-orange { background: var(--warning); color: #fff; }
-        .btn-red { background: var(--danger); }
-        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-outline:hover { background: var(--primary); color: white; }
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;}
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f7f6; color: var(--primary); }
+        .btn-outline-blue { color: var(--logo-blue); border: 2px solid var(--logo-blue); border-radius: 50px; padding: 10px 25px; font-weight: 700; transition: 0.3s; text-decoration: none;}
+        .btn-outline-blue:hover { background-color: var(--logo-blue); color: white; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px;}
+        .hero-section { background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%); padding: 100px 0; text-align: center; }
+        .btn-green { background-color: var(--logo-green); color: white; border-radius: 50px; padding: 10px 25px; font-weight: 700; border: none; transition: 0.3s; text-decoration: none;}
+        .btn-green:hover { background-color: #00823F; color: white; transform: scale(1.05); }
+        .demo-section { padding: 80px 0; background: white; border-bottom: 1px solid #eee; }
+
+        .features-grid { padding: 80px 0; background: var(--bg-light); }
+        .feature-card { border: none; border-radius: 15px; padding: 30px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border-top: 4px solid var(--logo-green); }
+        .feature-card:hover { transform: translateY(-10px); border-top-color: var(--logo-orange); }
+        .icon-box { color: var(--logo-green); margin-bottom: 20px; }
+
+        .special-section { background-color: var(--logo-blue); color: white; padding: 80px 0; }
+        .special-box { border: 2px dashed var(--logo-orange); padding: 40px; border-radius: 20px; }
+        .pricing-section { padding: 80px 0; background: white; }
+        .price-card { border: 3px solid var(--logo-green); border-radius: 25px; padding: 50px; position: relative; background: white; }
+        .price-tag { font-size: 4.5rem; font-weight: 800; color: var(--logo-blue); }
+
+        .guide-box { max-width: 900px; background: #ffffff; border-left: 6px solid var(--logo-orange); border-radius: 15px; padding: 30px; border-top: 1px solid #eef5ee; border-right: 1px solid #eef5ee; border-bottom: 1px solid #eef5ee; margin: 0 auto; }
+        .guide-icon-circle { width: 70px; height: 70px; background-color: #e8f5e9; color: var(--logo-green); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-green-custom { color: var(--logo-green); border: 2px solid var(--logo-green); border-radius: 50px; transition: 0.3s; text-decoration: none; display: inline-block; }
+        .btn-green-custom:hover { background-color: var(--logo-green); color: white !important; transform: translateY(-2px); }
+        .step-circle { width: 45px; height: 45px; background: var(--logo-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; font-weight: bold; flex-shrink: 0; }
+
+        .gallery-section { padding: 80px 0; background: #fff; border-top: 1px solid #eee; }
+        .custom-scroll { gap: 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .custom-scroll::-webkit-scrollbar { display: none; }
+        .gallery-item { min-width: 260px; scroll-snap-align: start; }
+        .gallery-img-container { aspect-ratio: 3 / 4; overflow: hidden; border-radius: 12px; cursor: pointer; background: #eee; }
+        .gallery-img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        
+        .lightbox-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; justify-content: center; align-items: center; touch-action: none; }
+        .lightbox-content { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
+        .lightbox-content img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; }
+        .lightbox-caption-bubble { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 10px 25px; border-radius: 30px; font-weight: 600; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; z-index: 10005; }
+        .lightbox-caption-bubble.show { opacity: 1; }
+        .lightbox-close { position: absolute; top: 15px; right: 15px; font-size: 40px; color: white; background: none; border: none; cursor: pointer; z-index: 10010; text-shadow: 2px 2px 8px rgba(0, 0, 0, 1); }
+        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); color: white; border: none; padding: 20px; font-size: 30px; cursor: pointer; border-radius: 50%; z-index: 10001; }
+
+        footer { background-color: #0d0d0d; color: #ffffff; padding: 60px 0 30px; border-top: 3px solid var(--logo-orange);}
+        footer a { color: #8bb3ff; text-decoration: none; transition: 0.3s; }
+        footer a:hover { color: var(--logo-orange); }
+
+        @media (max-width: 768px) { .guide-box { padding: 20px; margin: 0 15px; } }
+
+        .trust-badge-wrapper { background-color: var(--bg-light); padding-bottom: 60px; text-align: center; }
+        .trust-badge { display: inline-flex; align-items: center; background: white; padding: 15px 45px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border: 2px solid #eef5ee; transition: all 0.3s ease; }
+        .trust-badge:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0, 166, 81, 0.2); border-color: var(--logo-green); }
+        .trust-icon { color: var(--logo-green); font-size: 2.2rem; margin-right: 15px; filter: drop-shadow(2px 4px 6px rgba(0, 166, 81, 0.3)); }
+        .trust-text { color: var(--logo-blue); font-size: 1.6rem; font-weight: 800; margin: 0; text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.15); }
+
+        @media (max-width: 768px) { .trust-badge { padding: 12px 25px; } .trust-icon { font-size: 1.8rem; margin-right: 12px; } .trust-text { font-size: 1.3rem; } }
+
+        .whatsapp-float { position: fixed; width: 60px; height: 60px; bottom: 40px; right: 40px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 35px; box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease; animation: pulse-wa 2s infinite; will-change: transform; }
+        .whatsapp-float:hover { color: #FFF; background-color: #1ebe57; transform: scale(1.1); }
+        @keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+        @media (max-width: 768px) { .whatsapp-float { width: 55px; height: 55px; bottom: 20px; right: 20px; font-size: 32px; } }
     </style>
 </head>
 <body>
 
-    <!-- ================= LOGIN SECTION ================= -->
-    <div id="loginSection">
-        <div class="login-card">
-            <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue" class="logo">
-            <h2 class="portal-title">ADMIN LOGIN</h2>
-            <div class="subtitle">Institution Control Centre</div>
-            
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="username" class="login-input" placeholder="Admin Username" required autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" class="login-input" placeholder="Password" required>
-                </div>
-                <button type="submit" id="loginBtn" class="login-btn">Secure Login <i class="fas fa-sign-in-alt"></i></button>
-            </form>
-            <div id="errorMsg" class="error"></div>
-            
-            <!-- Added Back to Home -->
-            <a href="index.html" class="back-link"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Back to Home</a>
-        </div>
-    </div>
+    <a href="https://wa.me/918138860044?text=Hi%2C%20I'm%20%5BYour%20Name%5D%0AI%20want%20to%20know%20more%20about%20ResultVue" class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+        </svg>
+    </a>
 
-    <!-- ================= DASHBOARD SECTION ================= -->
-    <div id="dashboardSection">
-        <div class="header">
-            <div>
-                <div class="header-top">ResultVue Result Portal</div>
-                <div class="header-main">CONTROL CENTRE</div>
-                <div class="header-sub" id="displaySchoolName">Loading...</div>
-            </div>
-            <button onclick="performLogout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
-
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
         <div class="container">
-            <div class="grid-2">
-                <div class="card" style="border-top-color: var(--success);">
-                    <h3 style="color: var(--success);"><i class="fas fa-satellite-dish"></i> Portal Status & Modes</h3>
-                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid #eee;">
-                        <div style="font-size: 12px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Current Status</div>
-                        <div id="modeStatus" style="font-size: 22px; font-weight: 900; color: #333;">Checking...</div>
-                    </div>
-                    <button class="btn-outline" style="width: 100%; margin-bottom: 15px;" onclick="toggleModeButtons()">🔄 Change Portal Mode</button>
-                    <div id="modeButtons" style="display: none; gap: 10px; margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-                        <button class="btn-green" style="flex: 1; padding: 8px; font-size: 12px;" onclick="setModeWithWarning('live')">Publish Live</button>
-                        <button class="btn-orange" style="flex: 1; padding: 8px; font-size: 12px;" onclick="setModeWithWarning('pause')">Pause (Wait)</button>
-                        <button class="btn-red" style="flex: 1; padding: 8px; font-size: 12px;" onclick="setModeWithWarning('close')">Close Portal</button>
-                    </div>
-                </div>
-
-                <!-- Added Preview Link & Database Link -->
-                <div class="card" style="border-top-color: var(--warning);">
-                    <h3 style="color: var(--warning);"><i class="fas fa-link"></i> Portal Links & Database</h3>
-                    <div style="background: #eef2f5; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border-left: 4px solid var(--warning);">
-                        <div style="color: #666; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Public Result Portal</div>
-                        <a href="#" id="publicLink" target="_blank" style="color: var(--primary); font-weight: bold; text-decoration: none;">🌐 Open Public Link</a>
-                    </div>
-                    <div style="background: #fff3e0; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border-left: 4px solid var(--danger);">
-                        <div style="color: #666; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Admin Preview (Bypass Lock)</div>
-                        <a href="#" id="previewLink" target="_blank" style="color: var(--danger); font-weight: bold; text-decoration: none;">👁️ Open Preview Link</a>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-outline" style="flex: 1; padding: 10px 5px; font-size: 12px;" onclick="openDatabase()">📊 Open Database</button>
-                        <button class="btn-orange" style="flex: 1; padding: 10px 5px; font-size: 12px;" onclick="clearCache()">🧹 Clear Cache</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3><i class="fas fa-chart-line"></i> Portal Analytics</h3>
-                <div class="stats-container" id="analyticsArea">
-                    <div class="stat-box" style="border-bottom-color: var(--primary);">
-                        <div class="stat-label">Total Students</div>
-                        <div class="stat-value" id="statTotal">--</div>
-                    </div>
-                    <div class="stat-box" style="border-bottom-color: var(--success);">
-                        <div class="stat-label">Total Passed</div>
-                        <div class="stat-value" id="statPassed" style="color: var(--success);">--</div>
-                    </div>
-                    <div class="stat-box" style="border-bottom-color: var(--danger);">
-                        <div class="stat-label">Total Failed</div>
-                        <div class="stat-value" id="statFailed" style="color: var(--danger);">--</div>
-                    </div>
-                    <div class="stat-box" style="border-bottom-color: var(--warning);">
-                        <div class="stat-label">Portal Views</div>
-                        <div class="stat-value" id="statViews" style="color: var(--warning);">--</div>
-                    </div>
-                </div>
-
-                <button onclick="toggleDetailedStats()" class="btn-outline" style="width: 100%; margin-bottom: 10px;">📉 Get Detailed Information</button>
-                
-                <div id="detailedStatsArea" style="display: none; overflow-x: auto; margin-bottom: 15px;">
-                    <table>
-                        <thead><tr><th>Class</th><th>Total Students</th><th>Passed</th><th>Failed</th><th>Searches/Views</th></tr></thead>
-                        <tbody id="detailedStatsBody"><tr><td colspan="5" style="text-align:center;">Loading details...</td></tr></tbody>
-                    </table>
-                </div>
-                <button style="background: #e0e0e0; color: #333; font-size: 12px; padding: 6px 12px; border:none; border-radius:4px; cursor:pointer;" onclick="callApi('resetAnalytics', {}, 'Views Reset successfully')">Reset Analytics</button>
-            </div>
-
-            <div class="card">
-                <h3><i class="fas fa-cogs"></i> Advanced Settings & Customization</h3>
-                <div class="grid-2">
-                    <form id="settingsForm" onsubmit="saveSettings(event)">
-                        <div class="form-group"><label>Institution Name</label><input type="text" id="instName" required></div>
-                        <div class="grid-2" style="gap: 10px;">
-                            <div class="form-group"><label>Short Name</label><input type="text" id="shortName" required></div>
-                            <div class="form-group"><label>Exam Year</label><input type="text" id="examYear" required></div>
-                        </div>
-                        <div class="form-group"><label>Exam Title</label><input type="text" id="examTitle" required></div>
-                        <div style="background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #eee;">
-                            <div class="form-group"><label>Publish Date & Time (YYYY/MM/DD HH:MM:SS)</label><input type="text" id="pubDate" placeholder="2026/01/01 08:00:00"></div>
-                            <div class="form-group"><label>Publish Date Display Text</label><input type="text" id="pubDateText"></div>
-                            <div class="form-group"><label>Portal Auto-Close Date & Time</label><input type="text" id="closeDate" placeholder="2026/12/31 23:59:59"></div>
-                        </div>
-                        <div class="form-group"><label>Scrolling Notification</label><textarea id="liveNotice" rows="3"></textarea></div>
-                        <div class="form-group"><label>Head of Institution (For Print)</label><input type="text" id="headMaster"></div>
-                        <button type="submit" id="saveSetBtn" style="width: 100%;">Save Settings</button>
-                    </form>
-
-                    <div>
-                        <div class="form-group">
-                            <label>Institution Logo</label>
-                            <input type="file" id="logoInput" accept="image/png, image/jpeg" onchange="openCropModal(event)">
-                        </div>
-                        <div class="logo-container" id="logoContainer" style="display:none; text-align:center; padding: 10px; border: 1px dashed #ccc; border-radius: 8px;">
-                            <img id="logoPreview" src="" style="margin-bottom: 10px; width:100px; height:100px; object-fit:contain;">
-                            <br>
-                            <button class="btn-red" style="padding: 6px 12px; font-size: 11px;" onclick="uploadLogoStr('')">🗑️ Delete Logo</button>
-                        </div>
-
-                        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-                            <h4 style="margin-top:0; color: var(--primary);">Bulk Print Results</h4>
-                            <select id="bulkClassSelect" style="margin-bottom: 10px; width:100%; padding:10px;"><option value="" disabled selected>Loading...</option></select>
-                            <button style="width: 100%;" onclick="openBulkPrint()">🖨️ Generate Bulk PDF</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Added Branding Footer -->
-        <footer style="text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px dashed #ccc; color: #888; font-size: 12px; background: #fff;">
-            <p style="text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px;">Powered by</p>
-            <a href="index.html" target="_blank">
-                <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue" style="height: 35px;">
+            <a class="navbar-brand" href="#">
+                <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue Logo">
             </a>
-            <p style="margin-top: 10px;">© 2026 ResultVue. Secure Admin Panel.</p>
-        </footer>
-    </div>
-
-    <!-- Crop Modal -->
-    <div id="cropModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-top: 0; color: var(--primary);">Adjust Logo</h3>
-            <div style="max-height: 300px; overflow: hidden; margin-bottom: 15px; background: #eee;"><img id="imageToCrop" src=""></div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-green" style="flex: 1;" onclick="cropAndSave()">Crop & Save</button>
-                <button class="btn-red" style="flex: 1;" onclick="closeCropModal()">Cancel</button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#demo">Demo</a></li>
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#pricing">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#user-guide">User Guide</a></li>
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#gallery">Gallery</a></li>
+                    
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+                        <a class="btn btn-outline-blue w-100" href="SchoolDashboard.html">
+                            <i class="fas fa-user-shield me-1"></i> Admin Login
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a class="btn btn-green shadow-sm w-100" href="https://wa.me/918138860044?text=Hi%2C%20I'm%20%5BYour%20Name%5D%0AI%20want%20to%20register%20for%20ResultVue%0A%0AName%20of%20Institution%3A%0ANo.%20of%20Classes%3A" target="_blank">Register Now</a>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-3" style="color: var(--logo-blue);">ResultVue: Smart Results. <br><span style="color: var(--logo-green);">Simple Management.</span></h1>
+            <p class="lead mb-5 text-secondary fs-4">പരീക്ഷാഫലങ്ങൾ പ്രസിദ്ധീകരിക്കാൻ ഏറ്റവും ലളിതവും വേഗതയേറിയതുമായ മാർഗ്ഗം.</p>
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                <a href="#pricing" class="btn btn-green btn-lg px-5 shadow custom-scroll-link">Start for ₹99</a>
+                <a href="#demo" class="btn btn-outline-dark btn-lg px-5 custom-scroll-link">View Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features-grid">
+        <div class="container">
+            <h2 class="text-center display-6 fw-bold mb-5" style="color: var(--logo-blue);">ResultVue കൺട്രോൾ സെന്റർ</h2>
+            <div class="row g-4 text-start">
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-file-pdf fa-3x"></i></div>
+                        <h4 class="fw-bold">മൾട്ടി-ഫോർമാറ്റ് ഷെയറിംഗ്</h4>
+                        <p class="text-muted">റിസൾട്ടുകൾ PDF, Image, അല്ലെങ്കിൽ Text രീതികളിൽ വിദ്യാർത്ഥികൾക്ക് ഷെയർ ചെയ്യാൻ സാധിക്കുന്നു.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-user-shield fa-3x"></i></div>
+                        <h4 class="fw-bold">അഡ്മിൻ കൺട്രോൾ സെന്റർ</h4>
+                        <p class="text-muted">മാർക്ക് എൻട്രി, പോർട്ടൽ കൺട്രോൾ (Scheduling, Publishing, Closing) എന്നിവ അധ്യാപകർക്ക് എളുപ്പത്തിൽ ചെയ്യാം.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-calendar-alt fa-3x"></i></div>
+                        <h4 class="fw-bold">സ്മാർട്ട് ഷെഡ്യൂളിംഗ്</h4>
+                        <p class="text-muted">നിശ്ചയിച്ച സമയത്ത് റിസൾട്ട് താനേ പബ്ലിഷ് ആകുന്ന രീതിയിൽ സെറ്റ് ചെയ്യാം.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-print fa-3x"></i></div>
+                        <h4 class="fw-bold">ബൾക്ക് പ്രിന്റിംഗ്</h4>
+                        <p class="text-muted">ഒരു ക്ലാസിലെ മുഴുവൻ റിസൾട്ടുകളും അധ്യാപകർക്ക് ഒറ്റ ക്ലിക്കിൽ പ്രിന്റ് ചെയ്യാനുള്ള സൗകര്യം ലഭ്യമാണ്.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-chart-line fa-3x"></i></div>
+                        <h4 class="fw-bold">ലൈവ് അനലിറ്റിക്സ്</h4>
+                        <p class="text-muted">ഓരോ ക്ലാസിലും എത്ര പേർ റിസൾട്ട് പരിശോധിക്കുന്നുണ്ടെന്ന് തത്സമയം നിരീക്ഷിക്കാവുന്നതാണ്.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-power-off fa-3x"></i></div>
+                        <h4 class="fw-bold">ഇൻസ്റ്റന്റ് ക്ലോസ്</h4>
+                        <p class="text-muted">ആവശ്യാനുസരണം പോർട്ടൽ ഉടനടിയോ ഷെഡ്യൂൾ ചെയ്തോ ക്ലോസ് ചെയ്യാം.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="trust-badge-wrapper">
+        <div class="container">
+            <div class="trust-badge">
+                <i class="fas fa-shield-alt trust-icon"></i>
+                <h3 class="trust-text">100% Secure & Private</h3>
+            </div>
+        </div>
+    </section>
+
+    <section id="demo" class="demo-section">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="display-6 fw-bold mb-4" style="color: var(--logo-blue);">ഞങ്ങളുടെ സിസ്റ്റം എങ്ങനെ പ്രവർത്തിക്കുന്നു എന്ന് നേരിട്ട് കാണൂ...</h2>
+                    <p class="fs-5 text-muted mb-5">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ റിസൾട്ടുകൾ എത്രത്തോളം പ്രൊഫഷണലായി പബ്ലിഷ് ചെയ്യാമെന്ന് പോർട്ടലിന്റെ ഡെമോ പരിശോധിച്ച് മനസ്സിലാക്കാം.</p>
+                    <a href="portal.html?school=RVDEMO" target="_blank" class="btn btn-outline-dark btn-lg px-5 shadow-sm">View Live Demo</a>
+                    <p class="small text-danger mt-4 fw-bold"><i class="fas fa-info-circle me-1"></i> നിങ്ങൾക്കിഷ്ടമുള്ള ക്ലാസ് സെലക്ട് ചെയ്ത് 1-5 ഇടയിലുള്ള റോൾ നമ്പർ എന്റർ ചെയ്ത് സെർച്ച് ചെയ്യൂ.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="special-section text-center">
+        <div class="container">
+            <div class="special-box mx-auto">
+                <h2 class="display-6 fw-bold mb-4" style="color: var(--logo-orange);">Duplicate Roll Number? No Problem!</h2>
+                <p class="fs-4 fw-light">ഒരു ക്ലാസിൽ ഒന്നിലധികം ഒരേ റോൾ നമ്പറുകൾ വരുന്ന സ്ഥാപനങ്ങളിൽ <strong>'Gender'</strong> അടിസ്ഥാനമാക്കി കൃത്യമായ ഫലം നൽകാൻ ResultVue-ന് സാധിക്കും. ഇത് അധ്യാപകരുടെ വലിയൊരു തലവേദന ഒഴിവാക്കുന്നു.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing-section">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-5" style="color: var(--logo-blue);">ലളിതമായ നിരക്ക്, വിസ്മയിപ്പിക്കുന്ന ഫീച്ചറുകൾ.</h2>
+           
+            <div class="row justify-content-center g-4">
+                <div class="col-lg-5 col-md-6">
+                    <div class="price-card shadow-sm position-relative mt-3 d-flex flex-column h-100">
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" style="background-color: var(--logo-orange); color: white; border: 2px solid white;">
+                                🔥 20% OFF
+                            </span>
+                        </div>
+                        <div class="mt-4 mb-0">
+                            <span class="text-muted fs-3 text-decoration-line-through fw-bold opacity-50">₹125</span>
+                        </div>
+                        <div class="price-tag mb-0" style="line-height: 1.1;">₹99</div>
+                        <p class="fw-bold fs-4 mb-2" style="color: var(--logo-green);">/ Class</p>
+                        <p class="text-muted mb-4 fw-bold fs-5">Term Plan</p>
+                        <hr>
+                        <ul class="list-unstyled text-start mb-4 fs-5">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> All Sharing Formats</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Secured Admin Panel</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Real-time Traffic Stats</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-info-circle me-2"></i> ഒരു ടേമിലേക്ക് മാത്രം</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="https://wa.me/918138860044?text=Hi%2C%20I'm%20%5BYour%20Name%5D%0AI%20want%20to%20register%20for%20ResultVue%20Term%20Plan%0A%0AName%20of%20Institution%3A%0ANo.%20of%20Classes%3A" target="_blank" class="btn btn-outline-success btn-lg w-100 py-3 text-uppercase fw-bold shadow-sm" style="border-width: 2px;">Register Now</a>
+                            <p class="mt-4 text-muted small mb-0">ഈ ഓഫർ പരിമിത കാലത്തേക്ക് മാത്രം.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-md-6">
+                    <div class="price-card shadow-lg position-relative mt-3 d-flex flex-column h-100" style="border-color: var(--logo-blue);">
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" style="background-color: var(--logo-blue); color: white; border: 2px solid white;">
+                                🌟 BEST VALUE
+                            </span>
+                        </div>
+                        <div class="mt-4 mb-0">
+                            <span class="fs-3 fw-bold opacity-0 d-block">₹000</span>
+                        </div>
+                        <div class="price-tag mb-0" style="line-height: 1.1; color: var(--logo-orange);">₹450</div>
+                        <p class="fw-bold fs-4 mb-2" style="color: var(--logo-green);">/ Class</p>
+                        <p class="text-muted mb-4 fw-bold fs-5">Annual Plan</p>
+                        <hr>
+                        <ul class="list-unstyled text-start mb-4 fs-5">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> All Sharing Formats</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Secured Admin Panel</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Real-time Traffic Stats</li>
+                            <li class="mb-2 fw-bold" style="color: var(--logo-blue);"><i class="fas fa-infinity text-warning me-2"></i> അൺലിമിറ്റഡ് പരീക്ഷകൾ</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="https://wa.me/918138860044?text=Hi%2C%20I'm%20%5BYour%20Name%5D%0AI%20want%20to%20register%20for%20ResultVue%20Annual%20Plan%0A%0AName%20of%20Institution%3A%0ANo.%20of%20Classes%3A" target="_blank" class="btn btn-green btn-lg w-100 py-3 text-uppercase fw-bold shadow">Register Now</a>
+                            <p class="mt-4 text-muted small mb-0">ഒരു വർഷത്തെ പൂർണ്ണ ആക്സസ്.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center display-6 fw-bold mb-5" style="color: var(--logo-blue);">എങ്ങനെ തുടങ്ങാം?</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-7 text-start">
+                    <div class="card border-0 shadow-sm p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="step-circle">1</div>
+                            <p class="mb-0 fs-5 fw-bold" style="color: var(--logo-blue);">മുകളിലുള്ള 'Register Now' ബട്ടൺ ക്ലിക്ക് ചെയ്യുക.</p>
+                        </div>
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="step-circle">2</div>
+                            <p class="mb-0 fs-5 fw-bold" style="color: var(--logo-blue);">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ വിവരങ്ങൾ നൽകുക.</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="step-circle">3</div>
+                            <p class="mb-0 fs-5 fw-bold" style="color: var(--logo-blue);">ഞങ്ങളുടെ ടീം നിങ്ങളെ ബന്ധപ്പെടുകയും 24 മണിക്കൂറിനുള്ളിൽ പോർട്ടൽ സെറ്റ് ചെയ്ത്  നൽകുകയും ചെയ്യും.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="user-guide" class="guide-section py-5">
+        <div class="container">
+            <div class="guide-box mx-auto shadow-sm">
+                <div class="row align-items-center text-center text-md-start">
+                    <div class="col-md-2 mb-3 mb-md-0 text-center">
+                        <div class="guide-icon-circle">
+                            <i class="fas fa-file-invoice fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h3 class="fw-bold mb-2" style="color: var(--logo-blue);">ResultVue User Guide</h3>
+                        <p class="mb-0 text-muted">പോർട്ടൽ എങ്ങനെ ഉപയോഗിക്കാം എന്നതിനെക്കുറിച്ച് വ്യക്തമായ ധാരണ ലഭിക്കാൻ ഞങ്ങളുടെ യൂസർ ഗൈഡ് ഉപയോഗപ്പെടുത്തുക.</p>
+                    </div>
+                    <div class="col-md-3 text-center text-md-end mt-4 mt-md-0">
+                        <a href="https://drive.google.com/file/d/1cjfZjzIOLXBVaLlF0YerSypoHcNZ2cPa/preview" target="_blank" class="btn btn-green-custom px-4 py-2 fw-bold">
+                            <i class="fas fa-file-pdf me-2"></i>Read Guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="gallery-section py-5">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-5" style="color: var(--logo-blue);">Portal Walkthrough</h2>
+            <div class="gallery-wrapper position-relative">
+                <div id="imageGallery" class="d-flex flex-row overflow-auto pb-4 custom-scroll">
+                    <p id="loadingText" class="text-muted w-100 text-center">Loading images...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="customLightbox" class="lightbox-overlay">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav prev d-none d-md-block" onclick="changeImage(-1)">&#10094;</button>
+        <button class="lightbox-nav next d-none d-md-block" onclick="changeImage(1)">&#10095;</button>
+        <div class="lightbox-content">
+            <img id="lightboxImg" src="" alt="Full View" onclick="toggleZoom()">
+            <p id="lightboxCaption" class="lightbox-caption-bubble"></p>
         </div>
     </div>
 
+    <footer id="contact">
+        <div class="container text-center text-md-start">
+            <div class="row g-4 justify-content-between align-items-center">
+                <div class="col-md-4">
+                    <div class="footer-logo mb-2">
+                        <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue" style="height: 40px; object-fit: contain;">
+                    </div>
+                    <p class="small text-white-50 mt-3">Empowering institutions with smart and professional result management solutions.</p>
+                </div>
+                <div class="col-md-5 text-md-end">
+                    <p class="mb-1">Email: <strong><a href="mailto:abdjunaidkv@gmail.com">help.resultvue@gmail.com</a></strong></p>
+                    <p class="mb-4">WhatsApp: <strong><a href="https://wa.me/918138860044" target="_blank">+91 81388 60044</a></strong></p>
+                    <p class="small text-white-50 mb-0">© 2026 ResultVue. Powered by Google Apps Script & GitHub.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        let currentImageData = [];
+        let currentIndex = 0;
+        let autoScrollInterval;
+        let captionTimeout;
+        let touchStartX = 0;
+
+        // ⭐️ പുതിയ API URL (For fetching Gallery)
         const API_URL = "https://script.google.com/macros/s/AKfycbxNL1AyCgayAFaVIuNErX5Bm7OpkWHpcPs7i1XBXB-gIZUu1jxG88gEYeHaVYEMV2INAg/exec";
-        
-        let CURRENT_SCHOOL_ID = localStorage.getItem('activeSchoolId');
-        let AUTH_TOKEN = localStorage.getItem('authToken_' + CURRENT_SCHOOL_ID);
-        let cropper;
 
-        // Auto Logout Script Added
-        let inactivityTime = function () {
-            let time;
-            let isThrottled = false;
-            function logout() {
-                if (document.getElementById('dashboardSection').style.display === 'block') {
-                    performLogout(true);
+        document.querySelectorAll('.custom-scroll-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault(); 
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if(targetElement) {
+                    const y = targetElement.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
                 }
-            }
-            function resetTimer() { 
-                if (isThrottled) return; 
-                isThrottled = true; setTimeout(() => { isThrottled = false; }, 5000); 
-                clearTimeout(time); time = setTimeout(logout, 5 * 60 * 1000); 
-            }
-            window.onload = resetTimer; document.onmousemove = resetTimer; document.onkeypress = resetTimer; document.ontouchstart = resetTimer; document.onclick = resetTimer; document.onscroll = resetTimer;
-        };
-        inactivityTime();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (CURRENT_SCHOOL_ID && AUTH_TOKEN) { showDashboard(); }
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    bootstrap.Collapse.getInstance(navbarCollapse).hide();
+                }
+            });
         });
 
-        async function fetchSecure(action, payload = {}) {
-            const body = { action, schoolId: CURRENT_SCHOOL_ID, token: AUTH_TOKEN, ...payload };
+        document.addEventListener('click', function (event) {
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                if (!navbarCollapse.contains(event.target) && !navbarToggler.contains(event.target)) {
+                    bootstrap.Collapse.getInstance(navbarCollapse).hide();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
             try {
-                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getGallery' })
+                });
                 const data = await response.json();
                 
-                if (data.success === false && data.message && data.message.includes("Unauthorized Request")) {
-                    performLogout(true);
-                    throw new Error("Session Expired");
+                if (data.success) {
+                    initGallery(data.images);
+                } else {
+                    document.getElementById('loadingText').innerHTML = "Gallery is currently unavailable.";
                 }
-                return data;
             } catch (error) {
-                console.error("API Error:", error);
-                return { success: false, message: error.message || "Network Error" };
+                document.getElementById('loadingText').innerHTML = "Connection to gallery server failed.";
             }
-        }
+        });
 
-        async function handleLogin(e) {
-            e.preventDefault();
-            const btn = document.getElementById('loginBtn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-            btn.disabled = true;
+        function initGallery(images) {
+            currentImageData = images;
+            const galleryDiv = document.getElementById('imageGallery');
+            const loadingText = document.getElementById('loadingText');
+            if (!images || images.length === 0) { loadingText.innerHTML = "No images found."; return; }
+            loadingText.style.display = 'none';
 
-            const payload = { 
-                action: 'login', 
-                username: document.getElementById('username').value, 
-                password: document.getElementById('password').value 
-            };
-
-            try {
-                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await response.json();
-
-                if (result.success) {
-                    CURRENT_SCHOOL_ID = result.schoolId;
-                    AUTH_TOKEN = result.token;
-                    localStorage.setItem('activeSchoolId', CURRENT_SCHOOL_ID);
-                    localStorage.setItem('authToken_' + CURRENT_SCHOOL_ID, AUTH_TOKEN);
-                    localStorage.setItem('schoolName', result.schoolName);
-                    // Save Spreadsheet ID for DB link
-                    localStorage.setItem('spreadsheetId_' + CURRENT_SCHOOL_ID, result.spreadsheetId); 
-                    
-                    showDashboard();
-                } else {
-                    document.getElementById('errorMsg').innerText = result.message;
-                    btn.innerHTML = 'Secure Login <i class="fas fa-sign-in-alt"></i>';
-                    btn.disabled = false;
-                }
-            } catch(e) {
-                document.getElementById('errorMsg').innerText = "Network connection failed.";
-                btn.innerHTML = 'Secure Login <i class="fas fa-sign-in-alt"></i>';
-                btn.disabled = false;
-            }
-        }
-
-        function performLogout(silent = false) {
-            localStorage.removeItem('activeSchoolId');
-            localStorage.removeItem('authToken_' + CURRENT_SCHOOL_ID);
-            localStorage.removeItem('spreadsheetId_' + CURRENT_SCHOOL_ID);
-            
-            if(silent) {
-                Swal.fire({ title: 'Session Expired', text: 'Please login again.', icon: 'warning', confirmButtonColor: '#12224A' }).then(() => location.reload());
-            } else {
-                Swal.fire({
-                    title: 'Logout?', text: 'Securely end session?', icon: 'question',
-                    showCancelButton: true, confirmButtonColor: '#E31837'
-                }).then((res) => { if(res.isConfirmed) location.reload(); });
-            }
-        }
-
-        function showDashboard() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('dashboardSection').style.display = 'block';
-            document.getElementById('displaySchoolName').innerText = localStorage.getItem('schoolName') || CURRENT_SCHOOL_ID;
-            
-            const currentUrl = window.location.href;
-            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-            document.getElementById('publicLink').href = `${baseUrl}/portal.html?school=${CURRENT_SCHOOL_ID}`;
-            document.getElementById('previewLink').href = `${baseUrl}/portal.html?school=${CURRENT_SCHOOL_ID}&view=test`;
-
-            initDashboardData();
-        }
-
-        function openDatabase() {
-            const ssId = localStorage.getItem('spreadsheetId_' + CURRENT_SCHOOL_ID);
-            if (ssId && ssId !== 'undefined') {
-                window.open(`https://docs.google.com/spreadsheets/d/${ssId}/edit`, '_blank');
-            } else {
-                Swal.fire('Error', 'Database link not available. Please login again to refresh.', 'error');
-            }
-        }
-
-        async function initDashboardData() {
-            const analytics = await fetchSecure('getDashboardData');
-            if(analytics.success) updateAnalyticsUI(analytics.data);
-
-            const status = await fetchSecure('getPortalStatus');
-            if(status.mode) {
-                document.getElementById('modeStatus').innerText = status.mode;
-                document.getElementById('modeStatus').style.color = status.color;
-            }
-
-            const dynData = await fetchSecure('getDynamicSettings');
-            if(dynData.classes) {
-                const select = document.getElementById('bulkClassSelect');
-                select.innerHTML = '<option value="" disabled selected>-- Select a Class --</option>';
-                dynData.classes.forEach(c => select.innerHTML += `<option value="${c}">${c}</option>`);
-            }
-
-            try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getPublicConfig', schoolId: CURRENT_SCHOOL_ID }) });
-                const configData = await res.json();
-                if(configData.success && configData.config) {
-                    const c = configData.config;
-                    document.getElementById('instName').value = c.INSTITUTION_NAME || '';
-                    document.getElementById('shortName').value = c.SHORT_NAME || '';
-                    document.getElementById('examYear').value = c.EXAM_YEAR || '';
-                    document.getElementById('examTitle').value = c.EXAM_TITLE || '';
-                    document.getElementById('pubDate').value = c.PUBLISH_DATE || '';
-                    document.getElementById('pubDateText').value = c.PUBLISH_DATE_TEXT || '';
-                    document.getElementById('closeDate').value = c.CLOSE_DATE || '';
-                    document.getElementById('liveNotice').value = c.LIVE_NOTIFICATION || '';
-                    document.getElementById('headMaster').value = c.HEAD_MASTER || '';
-                    
-                    if(c.LOGO_BASE64 && c.LOGO_BASE64 !== "") {
-                        document.getElementById('logoPreview').src = c.LOGO_BASE64;
-                        document.getElementById('logoContainer').style.display = "block";
-                    }
-                }
-            } catch(e) { console.error("Error fetching config for settings form"); }
-        }
-
-        function updateAnalyticsUI(data) {
-            let total = 0, passed = 0, failed = 0, views = 0, tbody = "";
-            if(data && data.length > 0) {
-                data.forEach(d => { 
-                    total += d.total; passed += d.passed; failed += d.failed; views += (d.views || 0); 
-                    tbody += `<tr><td>${d.class}</td><td>${d.total}</td><td style="color:green; font-weight:bold;">${d.passed}</td><td style="color:red; font-weight:bold;">${d.failed}</td><td>${(d.views||0)}</td></tr>`;
-                });
-            } else { tbody = "<tr><td colspan='5' style='text-align:center;'>No data found.</td></tr>"; }
-            
-            document.getElementById('statTotal').innerText = total;
-            document.getElementById('statPassed').innerText = passed;
-            document.getElementById('statFailed').innerText = failed;
-            document.getElementById('statViews').innerText = views;
-            document.getElementById('detailedStatsBody').innerHTML = tbody;
-        }
-
-        function toggleModeButtons() {
-            const el = document.getElementById('modeButtons');
-            el.style.display = el.style.display === "none" ? "flex" : "none";
-        }
-        function toggleDetailedStats() {
-            const el = document.getElementById('detailedStatsArea');
-            el.style.display = el.style.display === "none" ? "block" : "none";
-        }
-
-        async function callApi(action, payload, successMsg) {
-            Swal.showLoading();
-            const res = await fetchSecure(action, payload);
-            if(res.success) {
-                Swal.fire({title: 'Success!', text: successMsg || res.message, icon: 'success', confirmButtonColor: '#12224A'});
-                initDashboardData();
-            } else {
-                Swal.fire({title: 'Error', text: res.message, icon: 'error', confirmButtonColor: '#12224A'});
-            }
-        }
-
-        function setModeWithWarning(mode) {
-            Swal.fire({ title: `Confirm ${mode.toUpperCase()}`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#12224A' }).then((result) => {
-                if (result.isConfirmed) {
-                    callApi('setPortalMode', { mode }, 'Portal mode updated.');
-                    document.getElementById('modeButtons').style.display = "none";
-                }
+            images.forEach((img, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                const imgUrl = 'https://drive.google.com/thumbnail?id=' + img.id + '&sz=w1000';
+                item.innerHTML = `<div class="gallery-img-container shadow-sm mb-2" onclick="openLightbox(${index})"><img src="${imgUrl}" alt="${img.caption}"></div><p class="small fw-bold text-secondary text-center">${img.caption}</p>`;
+                galleryDiv.appendChild(item);
             });
+            startAutoScroll();
         }
+
+        function startAutoScroll() {
+            const container = document.getElementById('imageGallery');
+            autoScrollInterval = setInterval(() => {
+                if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) { container.scrollTo({ left: 0, behavior: 'smooth' }); }
+                else { container.scrollBy({ left: 300, behavior: 'smooth' }); }
+            }, 2500);
+        }
+
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightboxImage();
+            document.getElementById('customLightbox').style.display = 'flex';
+            clearInterval(autoScrollInterval);
+            flashCaption();
+        }
+
+        function closeLightbox() { document.getElementById('customLightbox').style.display = 'none'; startAutoScroll(); }
+        function changeImage(step) { currentIndex = (currentIndex + step + currentImageData.length) % currentImageData.length; updateLightboxImage(); flashCaption(); }
         
-        function clearCache() {
-            Swal.fire({ title: 'Clear Cache?', text: "Do this after updating marks in Google Sheet.", icon: 'info', showCancelButton: true, confirmButtonColor: '#12224A' }).then((result) => {
-                if (result.isConfirmed) callApi('clearCache', {}, 'Cache cleared successfully.');
-            });
+        function updateLightboxImage() {
+            const img = currentImageData[currentIndex];
+            document.getElementById('lightboxImg').src = 'https://drive.google.com/thumbnail?id=' + img.id + '&sz=w1000';
+            document.getElementById('lightboxCaption').innerText = img.caption;
         }
 
-        async function saveSettings(e) {
-            e.preventDefault();
-            const payload = {
-                settings: {
-                    INSTITUTION_NAME: document.getElementById('instName').value,
-                    SHORT_NAME: document.getElementById('shortName').value,
-                    EXAM_YEAR: document.getElementById('examYear').value,
-                    EXAM_TITLE: document.getElementById('examTitle').value,
-                    PUBLISH_DATE: document.getElementById('pubDate').value,
-                    PUBLISH_DATE_TEXT: document.getElementById('pubDateText').value,
-                    CLOSE_DATE: document.getElementById('closeDate').value,
-                    LIVE_NOTIFICATION: document.getElementById('liveNotice').value,
-                    HEAD_MASTER: document.getElementById('headMaster').value
-                }
-            };
-            callApi('saveSettings', payload, 'Settings saved successfully');
+        function flashCaption() {
+            const cp = document.getElementById('lightboxCaption');
+            cp.classList.add('show');
+            clearTimeout(captionTimeout);
+            captionTimeout = setTimeout(() => cp.classList.remove('show'), 2000);
         }
 
-        function openCropModal(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('imageToCrop').src = e.target.result;
-                document.getElementById('cropModal').style.display = "flex";
-                if (cropper) cropper.destroy(); 
-                cropper = new Cropper(document.getElementById('imageToCrop'), { aspectRatio: 1, viewMode: 1, autoCropArea: 1 });
-            };
-            reader.readAsDataURL(file);
+        function toggleZoom() {
+            const img = document.getElementById('lightboxImg');
+            img.style.transform = (img.style.transform === "scale(1.5)") ? "scale(1)" : "scale(1.5)";
+            img.style.transition = "transform 0.3s ease";
         }
 
-        function closeCropModal() {
-            document.getElementById('cropModal').style.display = "none";
-            document.getElementById('logoInput').value = ""; 
-            if (cropper) cropper.destroy();
-        }
-
-        async function cropAndSave() {
-            if (!cropper) return;
-            const canvas = cropper.getCroppedCanvas({ width: 200, height: 200, fillColor: '#fff' });
-            const base64 = canvas.toDataURL('image/jpeg', 0.7);
-            closeCropModal();
-            uploadLogoStr(base64);
-        }
-
-        async function uploadLogoStr(base64Str) {
-            Swal.showLoading();
-            const res = await fetchSecure('saveLogo', { base64String: base64Str });
-            if(res.success) {
-                if(base64Str === "") {
-                    document.getElementById('logoContainer').style.display = "none";
-                    document.getElementById('logoPreview').src = "";
-                    Swal.fire({title: 'Deleted!', text: 'Logo removed.', icon: 'success', confirmButtonColor: '#12224A'});
-                } else {
-                    document.getElementById('logoPreview').src = base64Str;
-                    document.getElementById('logoContainer').style.display = "block";
-                    Swal.fire({title: 'Success!', text: 'Logo Updated.', icon: 'success', confirmButtonColor: '#12224A'});
-                }
-            } else {
-                Swal.fire({title: 'Error', text: res.message, icon: 'error', confirmButtonColor: '#12224A'});
-            }
-        }
-
-        function openBulkPrint() {
-            const cls = document.getElementById('bulkClassSelect').value;
-            if(!cls) { Swal.fire({title: 'Error', text: 'Select a class first!', icon: 'error', confirmButtonColor: '#12224A'}); return; }
-            
-            const currentUrl = window.location.href;
-            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-            window.open(`${baseUrl}/BulkPrint.html?school=${CURRENT_SCHOOL_ID}&class=${encodeURIComponent(cls)}`, "_blank");
-        }
+        const lb = document.getElementById('customLightbox');
+        lb.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        lb.addEventListener('touchend', e => {
+            const endX = e.changedTouches[0].screenX;
+            if (endX < touchStartX - 50) changeImage(1);
+            if (endX > touchStartX + 50) changeImage(-1);
+        });
     </script>
 </body>
 </html>
