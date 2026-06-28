@@ -29,6 +29,8 @@
         .login-input { width: 100%; padding: 14px 14px 14px 45px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fafafa; }
         .login-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
         .error { color: #E31837; font-size: 13px; font-weight: bold; margin-top: 15px; min-height: 20px; }
+        .back-link { display: inline-flex; align-items: center; justify-content: center; margin-top: 25px; color: #666; text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.3s; }
+        .back-link:hover { color: var(--primary); }
 
         /* DASHBOARD UI */
         #dashboardSection { display: none; }
@@ -72,6 +74,7 @@
 </head>
 <body>
 
+    <!-- ================= LOGIN SECTION ================= -->
     <div id="loginSection">
         <div class="login-card">
             <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue" class="logo">
@@ -90,9 +93,13 @@
                 <button type="submit" id="loginBtn" class="login-btn">Secure Login <i class="fas fa-sign-in-alt"></i></button>
             </form>
             <div id="errorMsg" class="error"></div>
+            
+            <!-- Added Back to Home -->
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Back to Home</a>
         </div>
     </div>
 
+    <!-- ================= DASHBOARD SECTION ================= -->
     <div id="dashboardSection">
         <div class="header">
             <div>
@@ -119,14 +126,21 @@
                     </div>
                 </div>
 
+                <!-- Added Preview Link & Database Link -->
                 <div class="card" style="border-top-color: var(--warning);">
                     <h3 style="color: var(--warning);"><i class="fas fa-link"></i> Portal Links & Database</h3>
                     <div style="background: #eef2f5; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border-left: 4px solid var(--warning);">
                         <div style="color: #666; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Public Result Portal</div>
                         <a href="#" id="publicLink" target="_blank" style="color: var(--primary); font-weight: bold; text-decoration: none;">🌐 Open Public Link</a>
                     </div>
+                    <div style="background: #fff3e0; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border-left: 4px solid var(--danger);">
+                        <div style="color: #666; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Admin Preview (Bypass Lock)</div>
+                        <a href="#" id="previewLink" target="_blank" style="color: var(--danger); font-weight: bold; text-decoration: none;">👁️ Open Preview Link</a>
+                    </div>
+                    
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-outline" style="flex: 1; padding: 10px 5px; font-size: 12px;" onclick="clearCache()">🧹 Clear Cache</button>
+                        <button class="btn-outline" style="flex: 1; padding: 10px 5px; font-size: 12px;" onclick="openDatabase()">📊 Open Database</button>
+                        <button class="btn-orange" style="flex: 1; padding: 10px 5px; font-size: 12px;" onclick="clearCache()">🧹 Clear Cache</button>
                     </div>
                 </div>
             </div>
@@ -203,8 +217,18 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Added Branding Footer -->
+        <footer style="text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px dashed #ccc; color: #888; font-size: 12px; background: #fff;">
+            <p style="text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px;">Powered by</p>
+            <a href="index.html" target="_blank">
+                <img src="https://drive.google.com/thumbnail?id=1VFjRQZcp79hrmsoC5R5sg6cFKqgj3Jli&sz=w1000" alt="ResultVue" style="height: 35px;">
+            </a>
+            <p style="margin-top: 10px;">© 2026 ResultVue. Secure Admin Panel.</p>
+        </footer>
     </div>
 
+    <!-- Crop Modal -->
     <div id="cropModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top: 0; color: var(--primary);">Adjust Logo</h3>
@@ -223,13 +247,28 @@
         let AUTH_TOKEN = localStorage.getItem('authToken_' + CURRENT_SCHOOL_ID);
         let cropper;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (CURRENT_SCHOOL_ID && AUTH_TOKEN) {
-                showDashboard();
+        // Auto Logout Script Added
+        let inactivityTime = function () {
+            let time;
+            let isThrottled = false;
+            function logout() {
+                if (document.getElementById('dashboardSection').style.display === 'block') {
+                    performLogout(true);
+                }
             }
+            function resetTimer() { 
+                if (isThrottled) return; 
+                isThrottled = true; setTimeout(() => { isThrottled = false; }, 5000); 
+                clearTimeout(time); time = setTimeout(logout, 5 * 60 * 1000); 
+            }
+            window.onload = resetTimer; document.onmousemove = resetTimer; document.onkeypress = resetTimer; document.ontouchstart = resetTimer; document.onclick = resetTimer; document.onscroll = resetTimer;
+        };
+        inactivityTime();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (CURRENT_SCHOOL_ID && AUTH_TOKEN) { showDashboard(); }
         });
 
-        // --- 1. CORE API FETCHER ---
         async function fetchSecure(action, payload = {}) {
             const body = { action, schoolId: CURRENT_SCHOOL_ID, token: AUTH_TOKEN, ...payload };
             try {
@@ -247,7 +286,6 @@
             }
         }
 
-        // --- 2. AUTHENTICATION ---
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
@@ -270,6 +308,8 @@
                     localStorage.setItem('activeSchoolId', CURRENT_SCHOOL_ID);
                     localStorage.setItem('authToken_' + CURRENT_SCHOOL_ID, AUTH_TOKEN);
                     localStorage.setItem('schoolName', result.schoolName);
+                    // Save Spreadsheet ID for DB link
+                    localStorage.setItem('spreadsheetId_' + CURRENT_SCHOOL_ID, result.spreadsheetId); 
                     
                     showDashboard();
                 } else {
@@ -287,6 +327,7 @@
         function performLogout(silent = false) {
             localStorage.removeItem('activeSchoolId');
             localStorage.removeItem('authToken_' + CURRENT_SCHOOL_ID);
+            localStorage.removeItem('spreadsheetId_' + CURRENT_SCHOOL_ID);
             
             if(silent) {
                 Swal.fire({ title: 'Session Expired', text: 'Please login again.', icon: 'warning', confirmButtonColor: '#12224A' }).then(() => location.reload());
@@ -298,33 +339,38 @@
             }
         }
 
-        // --- 3. DASHBOARD INITIALIZATION ---
         function showDashboard() {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('dashboardSection').style.display = 'block';
             document.getElementById('displaySchoolName').innerText = localStorage.getItem('schoolName') || CURRENT_SCHOOL_ID;
             
-            // Set up Public Link - portal.html എന്ന് മാറ്റിയതിനാൽ അതിനനുസരിച്ച് ലിങ്ക് നൽകുന്നു
             const currentUrl = window.location.href;
             const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
             document.getElementById('publicLink').href = `${baseUrl}/portal.html?school=${CURRENT_SCHOOL_ID}`;
+            document.getElementById('previewLink').href = `${baseUrl}/portal.html?school=${CURRENT_SCHOOL_ID}&view=test`;
 
             initDashboardData();
         }
 
+        function openDatabase() {
+            const ssId = localStorage.getItem('spreadsheetId_' + CURRENT_SCHOOL_ID);
+            if (ssId && ssId !== 'undefined') {
+                window.open(`https://docs.google.com/spreadsheets/d/${ssId}/edit`, '_blank');
+            } else {
+                Swal.fire('Error', 'Database link not available. Please login again to refresh.', 'error');
+            }
+        }
+
         async function initDashboardData() {
-            // 1. Get Analytics
             const analytics = await fetchSecure('getDashboardData');
             if(analytics.success) updateAnalyticsUI(analytics.data);
 
-            // 2. Get Status
             const status = await fetchSecure('getPortalStatus');
             if(status.mode) {
                 document.getElementById('modeStatus').innerText = status.mode;
                 document.getElementById('modeStatus').style.color = status.color;
             }
 
-            // 3. Get Classes for Bulk Print
             const dynData = await fetchSecure('getDynamicSettings');
             if(dynData.classes) {
                 const select = document.getElementById('bulkClassSelect');
@@ -332,7 +378,6 @@
                 dynData.classes.forEach(c => select.innerHTML += `<option value="${c}">${c}</option>`);
             }
 
-            // 4. Fetch Public Config to pre-fill settings form
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getPublicConfig', schoolId: CURRENT_SCHOOL_ID }) });
                 const configData = await res.json();
@@ -407,7 +452,6 @@
             });
         }
 
-        // --- 4. SETTINGS & LOGO ---
         async function saveSettings(e) {
             e.preventDefault();
             const payload = {
