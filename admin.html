@@ -4,116 +4,589 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Admin | ResultVue</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
-        :root { --primary: #12224A; --success: #00A651; --warning: #F58220; --bg: #f4f7f6; }
-        * { font-family: system-ui, -apple-system, 'Segoe UI', 'Anek Malayalam', sans-serif !important; }
-        body { background: linear-gradient(135deg, #f4f7f6 0%, #e8f5e9 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .admin-card { background: white; padding: 40px 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 5px solid var(--warning); width: 100%; max-width: 450px; }
-        .header { text-align: center; margin-bottom: 25px; }
-        .header h2 { color: var(--primary); margin: 0 0 5px 0; font-weight: 800; }
-        .header p { color: #666; margin: 0; font-size: 14px; font-weight: 600; }
-        .input-group { position: relative; margin-bottom: 15px; }
-        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; }
-        input, select { width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #fafafa; transition: 0.3s; }
-        input:focus, select:focus { border-color: var(--primary); outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(18,34,74,0.1); }
-        button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
-        button:hover { background: #0A1430; transform: translateY(-2px); }
-        .password-section { border-top: 2px dashed #ddd; margin-top: 20px; padding-top: 20px; }
+        :root { --primary: #12224A; --success: #00A651; --warning: #F58220; --danger: #E31837; --bg: #f4f7f6; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Login Screen */
+        #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 5px solid var(--warning); width: 100%; max-width: 400px; text-align: center; }
+        .login-card h2 { color: var(--primary); font-weight: 800; }
+        .login-btn { background: var(--primary); color: white; width: 100%; padding: 12px; font-weight: bold; border-radius: 6px; border: none; margin-top: 15px; }
+
+        /* Dashboard */
+        #adminDashboard { display: none; }
+        .navbar { background-color: var(--primary); padding: 15px 0; }
+        .navbar-brand { color: white !important; font-weight: 800; font-size: 20px; }
+        .logout-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 13px; }
+        
+        .nav-pills .nav-link { color: var(--primary); font-weight: 600; margin-bottom: 10px; border-radius: 8px; }
+        .nav-pills .nav-link.active { background-color: var(--primary); color: white; }
+        
+        .content-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        .table th { background-color: #f8f9fa; color: var(--primary); font-size: 13px; text-transform: uppercase; }
+        .table td { vertical-align: middle; font-size: 14px; }
+        
+        .badge-pending { background: #ffeeba; color: #fd7e14; }
+        .badge-active { background: #d4edda; color: #28a745; }
+        .badge-inactive { background: #f8d7da; color: #dc3545; }
+
+        .form-label { font-size: 13px; font-weight: 600; color: #555; }
     </style>
 </head>
 <body>
-    <div class="admin-card">
-        <div class="header">
+
+    <!-- 1. LOGIN SCREEN -->
+    <div id="loginScreen">
+        <div class="login-card">
             <h2>SUPER ADMIN</h2>
-            <p><i class="fas fa-plus-circle text-warning"></i> Add New Institution</p>
-        </div>
-        
-        <form id="addSchoolForm" onsubmit="handleFormSubmit(event)">
-            <div class="input-group">
-                <i class="fas fa-id-badge"></i>
-                <input type="text" id="schoolId" placeholder="School ID (e.g., RVDEMO)" required autocomplete="off" style="text-transform: uppercase;">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-school"></i>
-                <input type="text" id="schoolName" placeholder="Institution Name" required autocomplete="off">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-user-shield"></i>
-                <input type="text" id="username" placeholder="Admin Username" required autocomplete="off">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-key"></i>
-                <input type="text" id="password" placeholder="Admin Password" required autocomplete="off">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-database"></i>
-                <input type="text" id="spreadsheetId" placeholder="Google Sheet ID" required autocomplete="off">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-toggle-on"></i>
-                <select id="status" required>
-                    <option value="Active">🟢 Active (Portal Open)</option>
-                    <option value="Inactive">🔴 Inactive (Blocked)</option>
-                </select>
-            </div>
-            
-            <div class="password-section">
-                <div class="input-group">
-                    <i class="fas fa-lock text-danger"></i>
-                    <input type="password" id="superAdminPassword" placeholder="Enter Super Admin Password" required autocomplete="off">
+            <p class="text-muted mb-4">ResultVue Master Control</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-3">
+                    <input type="password" id="superPass" class="form-control form-control-lg text-center" placeholder="Enter Master Password" required>
                 </div>
-            </div>
-            
-            <button type="submit" id="submitBtn"><i class="fas fa-cloud-upload-alt"></i> Save to Database</button>
-            <a href="index.html" style="display: flex; justify-content: center; margin-top: 20px; color: #666; text-decoration: none; font-size: 13px; font-weight: 600;">
-    <i class="fas fa-arrow-left" style="margin-right: 5px; margin-top: 3px;"></i> Back to Home
-</a>
-        </form>
+                <button type="submit" class="login-btn" id="loginBtn"><i class="fas fa-lock me-2"></i> Access Panel</button>
+            </form>
+            <a href="index.html" class="d-block mt-4 text-muted text-decoration-none" style="font-size: 13px; font-weight: 600;"><i class="fas fa-arrow-left me-1"></i> Back to Home</a>
+        </div>
     </div>
 
+    <!-- 2. MAIN DASHBOARD -->
+    <div id="adminDashboard">
+        <nav class="navbar mb-4 shadow-sm">
+            <div class="container-fluid">
+                <span class="navbar-brand"><i class="fas fa-user-shield me-2 text-warning"></i>ResultVue Super Admin</span>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i> Logout</button>
+            </div>
+        </nav>
+
+        <div class="container-fluid px-4">
+            <div class="row">
+                <!-- Sidebar Nav -->
+                <div class="col-md-2 mb-4">
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#requests-tab" type="button" onclick="loadRequests()"><i class="fas fa-bell me-2"></i> Pending Requests</button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#schools-tab" type="button" onclick="loadSchools()"><i class="fas fa-school me-2"></i> Manage Schools</button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#add-tab" type="button"><i class="fas fa-plus-circle me-2"></i> Add Manually</button>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="col-md-10">
+                    <div class="tab-content">
+                        
+                        <!-- TAB 1: PENDING REQUESTS -->
+                        <div class="tab-pane fade show active" id="requests-tab">
+                            <div class="content-card border-top border-warning border-4">
+                                <h4 class="mb-4" style="color: var(--primary);">New Registration Requests</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-hover border">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Institute</th>
+                                                <th>Contact Person</th>
+                                                <th>Plan</th>
+                                                <th>Classes</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="requestsTableBody">
+                                            <tr><td colspan="6" class="text-center py-4">Loading requests...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: MANAGE SCHOOLS -->
+                        <div class="tab-pane fade" id="schools-tab">
+                            <div class="content-card border-top border-success border-4">
+                                <h4 class="mb-4" style="color: var(--primary);">Active Institutions</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-hover border">
+                                        <thead>
+                                            <tr>
+                                                <th>School ID</th>
+                                                <th>School Name</th>
+                                                <th>Plan</th>
+                                                <th>Expiry Date</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="schoolsTableBody">
+                                            <tr><td colspan="6" class="text-center py-4">Loading schools...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: ADD MANUALLY -->
+                        <div class="tab-pane fade" id="add-tab">
+                            <div class="content-card border-top border-primary border-4" style="max-width: 800px;">
+                                <h4 class="mb-4" style="color: var(--primary);">Add Institution Manually</h4>
+                                <form id="addSchoolForm" onsubmit="submitManualAdd(event)">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">School ID (e.g., RVDEMO) *</label>
+                                            <input type="text" class="form-control text-uppercase" id="m_schoolId" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Institution Name *</label>
+                                            <input type="text" class="form-control" id="m_schoolName" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Admin Username *</label>
+                                            <input type="text" class="form-control" id="m_username" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Admin Password *</label>
+                                            <input type="text" class="form-control" id="m_password" required>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Spreadsheet ID (Database) *</label>
+                                            <input type="text" class="form-control" id="m_spreadsheetId" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Registered Email</label>
+                                            <input type="email" class="form-control" id="m_email">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Plan Type</label>
+                                            <select class="form-select" id="m_plan">
+                                                <option value="Term Plan">Term Plan</option>
+                                                <option value="Annual Plan">Annual Plan</option>
+                                                <option value="Trial">Trial / Demo</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Expiry Date</label>
+                                            <input type="date" class="form-control" id="m_expiry">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Portal Status</label>
+                                            <select class="form-select" id="m_status">
+                                                <option value="Active">Active</option>
+                                                <option value="Inactive">Inactive</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 mt-4">
+                                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" id="m_submitBtn"><i class="fas fa-save me-2"></i> Save to Database</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Accept Request -->
+    <div class="modal fade" id="acceptModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Accept & Configure Portal</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info py-2" id="acceptInfoText"></div>
+                    <form id="acceptForm" onsubmit="submitAcceptRequest(event)">
+                        <input type="hidden" id="a_row">
+                        <input type="hidden" id="a_email">
+                        <input type="hidden" id="a_plan">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Institution Full Name</label>
+                                <input type="text" class="form-control" id="a_schoolName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Generate School ID *</label>
+                                <input type="text" class="form-control text-uppercase" id="a_schoolId" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Create Username *</label>
+                                <input type="text" class="form-control" id="a_username" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Create Password *</label>
+                                <input type="text" class="form-control" id="a_password" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Set Expiry Date *</label>
+                                <input type="date" class="form-control" id="a_expiry" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Assign Master Spreadsheet ID *</label>
+                                <input type="text" class="form-control" id="a_spreadsheetId" placeholder="Paste the duplicated Google Sheet ID here" required>
+                            </div>
+                        </div>
+                        <div class="mt-4 d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success fw-bold" id="a_submitBtn"><i class="fas fa-check-circle me-1"></i> Accept & Activate</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit School -->
+    <div class="modal fade" id="editSchoolModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Update Institution Data</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" onsubmit="submitEditSchool(event)">
+                        <input type="hidden" id="e_row">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">School ID (Read-only)</label>
+                                <input type="text" class="form-control bg-light" id="e_schoolId" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Institution Name</label>
+                                <input type="text" class="form-control" id="e_schoolName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Admin Username</label>
+                                <input type="text" class="form-control" id="e_username" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Admin Password</label>
+                                <input type="text" class="form-control" id="e_password" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Registered Email</label>
+                                <input type="email" class="form-control" id="e_email">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Plan Type</label>
+                                <select class="form-select" id="e_plan">
+                                    <option value="Term Plan">Term Plan</option>
+                                    <option value="Annual Plan">Annual Plan</option>
+                                    <option value="Trial">Trial / Demo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Expiry Date</label>
+                                <input type="date" class="form-control" id="e_expiry">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Portal Status</label>
+                                <select class="form-select" id="e_status" required>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Spreadsheet ID</label>
+                                <input type="text" class="form-control" id="e_spreadsheetId" required>
+                            </div>
+                        </div>
+                        <div class="mt-4 d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success fw-bold" id="e_submitBtn"><i class="fas fa-save me-1"></i> Update Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbxNL1AyCgayAFaVIuNErX5Bm7OpkWHpcPs7i1XBXB-gIZUu1jxG88gEYeHaVYEMV2INAg/exec";
+        let SUPER_PASS = sessionStorage.getItem('SuperAdminPass');
+        let currentRequests = [];
+        let currentSchools = [];
 
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            btn.disabled = true;
-            
-            const payload = {
-                action: 'addSchool',
-                superAdminPassword: document.getElementById('superAdminPassword').value.trim(),
-                data: {
-                    schoolId: document.getElementById('schoolId').value.toUpperCase().trim(),
-                    schoolName: document.getElementById('schoolName').value.trim(),
-                    username: document.getElementById('username').value.trim(),
-                    password: document.getElementById('password').value.trim(),
-                    spreadsheetId: document.getElementById('spreadsheetId').value.trim(),
-                    status: document.getElementById('status').value
+        // Check login on load
+        if (SUPER_PASS) { showDashboard(); }
+
+        // --- CORE API CALLER ---
+        async function apiCall(action, dataObj = {}) {
+            const payload = { action: action, superAdminPassword: SUPER_PASS, ...dataObj };
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const res = await response.json();
+                if (res.success === false && res.message.includes('Unauthorized')) {
+                    logout(); throw new Error("Incorrect Password or Session Expired");
                 }
+                return res;
+            } catch (error) {
+                console.error("API Error:", error);
+                return { success: false, message: error.message || "Network Error" };
+            }
+        }
+
+        // --- LOGIN & LOGOUT ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const pass = document.getElementById('superPass').value;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Verifying...';
+            btn.disabled = true;
+
+            // Test password by fetching requests
+            const payload = { action: 'getRequests', superAdminPassword: pass };
+            try {
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const res = await response.json();
+                
+                if (res.success) {
+                    SUPER_PASS = pass;
+                    sessionStorage.setItem('SuperAdminPass', pass);
+                    showDashboard();
+                } else {
+                    Swal.fire('Access Denied', res.message, 'error');
+                }
+            } catch (e) { Swal.fire('Error', 'Connection failed', 'error'); }
+            
+            btn.innerHTML = '<i class="fas fa-lock me-2"></i> Access Panel';
+            btn.disabled = false;
+        }
+
+        function logout() {
+            sessionStorage.removeItem('SuperAdminPass');
+            SUPER_PASS = null;
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('superPass').value = '';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            loadRequests();
+        }
+
+        // --- FORMATTERS ---
+        function formatDateForInput(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return '';
+            return d.toISOString().split('T')[0]; // returns YYYY-MM-DD
+        }
+        function formatDisplayDate(dateStr) {
+            if (!dateStr) return '--';
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            return d.toLocaleDateString('en-GB'); // DD/MM/YYYY
+        }
+
+        // --- TAB 1: PENDING REQUESTS ---
+        async function loadRequests() {
+            const tbody = document.getElementById('requestsTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><i class="fas fa-spinner fa-spin text-primary"></i> Fetching...</td></tr>';
+            
+            const res = await apiCall('getRequests');
+            if (res.success) {
+                currentRequests = res.data;
+                if (currentRequests.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No pending requests found.</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                currentRequests.forEach((req, index) => {
+                    html += `<tr>
+                        <td><small>${req.Timestamp}</small></td>
+                        <td><b>${req.Institute_Name}</b><br><small class="text-muted">${req.Short_Name}</small></td>
+                        <td>${req.Name}<br><small class="text-muted"><i class="fas fa-phone-alt"></i> ${req.Phone} | ${req.Email}</small></td>
+                        <td><span class="badge bg-info text-dark">${req.Plan}</span></td>
+                        <td>${req.Classes} Classes</td>
+                        <td>
+                            <button class="btn btn-sm btn-success me-1" onclick="openAcceptModal(${index})" title="Accept"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="rejectRequest(${req.row})" title="Reject"><i class="fas fa-times"></i></button>
+                        </td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            } else { tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">${res.message}</td></tr>`; }
+        }
+
+        function openAcceptModal(index) {
+            const req = currentRequests[index];
+            document.getElementById('acceptInfoText').innerHTML = `Activating portal for <b>${req.Institute_Name}</b> (${req.Plan})`;
+            
+            document.getElementById('a_row').value = req.row;
+            document.getElementById('a_email').value = req.Email || '';
+            document.getElementById('a_plan').value = req.Plan || 'Term Plan';
+            
+            document.getElementById('a_schoolName').value = req.Institute_Name;
+            document.getElementById('a_schoolId').value = req.Short_Name.toUpperCase() + new Date().getFullYear().toString().slice(-2);
+            document.getElementById('a_username').value = req.Short_Name.toLowerCase() + '_admin';
+            
+            // Generate random 6 char password
+            document.getElementById('a_password').value = Math.random().toString(36).slice(-6);
+            document.getElementById('a_spreadsheetId').value = '';
+            
+            // Default Expiry: 6 months for Term, 1 Year for Annual
+            const d = new Date();
+            if(req.Plan && req.Plan.includes('Annual')) d.setFullYear(d.getFullYear() + 1);
+            else d.setMonth(d.getMonth() + 6);
+            document.getElementById('a_expiry').value = formatDateForInput(d);
+
+            new bootstrap.Modal(document.getElementById('acceptModal')).show();
+        }
+
+        async function submitAcceptRequest(e) {
+            e.preventDefault();
+            const btn = document.getElementById('a_submitBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Processing...'; btn.disabled = true;
+
+            const schoolData = {
+                schoolId: document.getElementById('a_schoolId').value.toUpperCase(),
+                schoolName: document.getElementById('a_schoolName').value,
+                username: document.getElementById('a_username').value,
+                password: document.getElementById('a_password').value,
+                spreadsheetId: document.getElementById('a_spreadsheetId').value,
+                status: 'Active',
+                email: document.getElementById('a_email').value,
+                plan: document.getElementById('a_plan').value,
+                expiryDate: document.getElementById('a_expiry').value
             };
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                
-                if(result.success) {
-                    Swal.fire('Success!', result.message, 'success');
-                    document.getElementById('addSchoolForm').reset();
-                } else {
-                    Swal.fire('Error!', result.message, 'error');
+            const res = await apiCall('processRequest', { payload: { action: 'accept', row: document.getElementById('a_row').value, schoolData: schoolData } });
+            
+            if (res.success) {
+                Swal.fire('Activated!', res.message, 'success');
+                bootstrap.Modal.getInstance(document.getElementById('acceptModal')).hide();
+                loadRequests();
+            } else { Swal.fire('Error', res.message, 'error'); }
+            
+            btn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Accept & Activate'; btn.disabled = false;
+        }
+
+        function rejectRequest(row) {
+            Swal.fire({
+                title: 'Reject Request?', text: "This action will mark the request as rejected.", icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#E31837', confirmButtonText: 'Yes, Reject'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    Swal.showLoading();
+                    const res = await apiCall('processRequest', { payload: { action: 'reject', row: row } });
+                    if (res.success) { Swal.fire('Rejected', 'Request has been rejected.', 'success'); loadRequests(); }
+                    else { Swal.fire('Error', res.message, 'error'); }
                 }
-            } catch (error) {
-                Swal.fire('Connection Error!', 'Failed to connect to the server.', 'error');
-            } finally {
-                btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Save to Database';
-                btn.disabled = false;
-            }
+            });
+        }
+
+        // --- TAB 2: MANAGE SCHOOLS ---
+        async function loadSchools() {
+            const tbody = document.getElementById('schoolsTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><i class="fas fa-spinner fa-spin text-success"></i> Fetching...</td></tr>';
+            
+            const res = await apiCall('getSchools');
+            if (res.success) {
+                currentSchools = res.data;
+                if (currentSchools.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No schools found in database.</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                currentSchools.forEach((sch, index) => {
+                    let statusBadge = sch.Status === 'Active' ? 'badge-active' : 'badge-inactive';
+                    
+                    html += `<tr>
+                        <td class="fw-bold text-primary">${sch.School_ID}</td>
+                        <td><b>${sch.School_Name}</b><br><small class="text-muted"><i class="far fa-envelope"></i> ${sch.Email || 'No Email'}</small></td>
+                        <td><span class="badge bg-secondary">${sch.Plan || 'N/A'}</span></td>
+                        <td>${formatDisplayDate(sch.Expiry_Date)}</td>
+                        <td><span class="badge ${statusBadge}">${sch.Status || 'Unknown'}</span></td>
+                        <td><button class="btn btn-sm btn-outline-primary" onclick="openEditModal(${index})"><i class="fas fa-edit"></i> Edit</button></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            } else { tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">${res.message}</td></tr>`; }
+        }
+
+        function openEditModal(index) {
+            const sch = currentSchools[index];
+            document.getElementById('e_row').value = sch.row;
+            document.getElementById('e_schoolId').value = sch.School_ID;
+            document.getElementById('e_schoolName').value = sch.School_Name;
+            document.getElementById('e_username').value = sch.Username;
+            document.getElementById('e_password').value = sch.Password;
+            document.getElementById('e_email').value = sch.Email || '';
+            document.getElementById('e_plan').value = sch.Plan || 'Term Plan';
+            document.getElementById('e_expiry').value = formatDateForInput(sch.Expiry_Date);
+            document.getElementById('e_status').value = sch.Status || 'Active';
+            document.getElementById('e_spreadsheetId').value = sch.Spreadsheet_ID;
+            
+            new bootstrap.Modal(document.getElementById('editSchoolModal')).show();
+        }
+
+        async function submitEditSchool(e) {
+            e.preventDefault();
+            const btn = document.getElementById('e_submitBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Updating...'; btn.disabled = true;
+
+            const updateData = {
+                row: document.getElementById('e_row').value,
+                School_Name: document.getElementById('e_schoolName').value,
+                Username: document.getElementById('e_username').value,
+                Password: document.getElementById('e_password').value,
+                Email: document.getElementById('e_email').value,
+                Plan: document.getElementById('e_plan').value,
+                Expiry_Date: document.getElementById('e_expiry').value,
+                Status: document.getElementById('e_status').value,
+                Spreadsheet_ID: document.getElementById('e_spreadsheetId').value
+            };
+
+            const res = await apiCall('updateSchool', { data: updateData });
+            
+            if (res.success) {
+                Swal.fire('Updated!', res.message, 'success');
+                bootstrap.Modal.getInstance(document.getElementById('editSchoolModal')).hide();
+                loadSchools();
+            } else { Swal.fire('Error', res.message, 'error'); }
+            
+            btn.innerHTML = '<i class="fas fa-save me-1"></i> Update Record'; btn.disabled = false;
+        }
+
+        // --- TAB 3: ADD MANUALLY ---
+        async function submitManualAdd(e) {
+            e.preventDefault();
+            const btn = document.getElementById('m_submitBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...'; btn.disabled = true;
+
+            const schoolData = {
+                schoolId: document.getElementById('m_schoolId').value.toUpperCase(),
+                schoolName: document.getElementById('m_schoolName').value,
+                username: document.getElementById('m_username').value,
+                password: document.getElementById('m_password').value,
+                spreadsheetId: document.getElementById('m_spreadsheetId').value,
+                status: document.getElementById('m_status').value,
+                email: document.getElementById('m_email').value,
+                plan: document.getElementById('m_plan').value,
+                expiryDate: document.getElementById('m_expiry').value
+            };
+
+            const res = await apiCall('addSchool', { data: schoolData });
+            
+            if (res.success) {
+                Swal.fire('Added!', res.message, 'success');
+                document.getElementById('addSchoolForm').reset();
+            } else { Swal.fire('Error', res.message, 'error'); }
+            
+            btn.innerHTML = '<i class="fas fa-save me-2"></i> Save to Database'; btn.disabled = false;
         }
     </script>
 </body>
