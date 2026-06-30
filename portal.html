@@ -71,15 +71,26 @@
 <body>
 
 <div id="initialLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: var(--bg-color); z-index: 9999; transition: opacity 0.5s ease;">
-    <div style="text-align: center; margin-bottom: 20px;">
-        <p style="font-family: 'Segoe UI', sans-serif; color: var(--primary); margin: 0; font-weight: 600; letter-spacing: 1px; font-size: 16px;">
-            Connecting to Result Portal...
-        </p>
-        <p id="progressText" style="font-family: monospace; color: var(--warning); font-size: 24px; font-weight: bold; margin: 5px 0 0 0;">0%</p>
+    
+    <div style="font-size: 55px; color: var(--primary); animation: bounceIcon 1s infinite;">
+        🎓
     </div>
-    <div style="width: 250px; height: 6px; background-color: rgba(18, 34, 74, 0.15); border-radius: 10px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
-        <div id="progressBar" style="width: 0%; height: 100%; background-color: var(--primary); border-radius: 10px; transition: width 0.2s ease-out;"></div>
+    <h3 style="color: var(--primary-dark); font-weight: 800; margin-top: 15px; font-size: 22px; letter-spacing: 1px;">ResultVue</h3>
+    
+    <p id="loadingTextDynamic" style="color: var(--warning); font-size: 14px; font-weight: bold; margin-top: 10px; text-align: center; transition: opacity 0.3s; height: 20px;">
+        Connecting to server...
+    </p>
+
+    <div style="margin-top: 15px; display: flex; gap: 8px;">
+        <div style="width: 10px; height: 10px; background: var(--success); border-radius: 50%; animation: pulseDot 1s infinite alternate;"></div>
+        <div style="width: 10px; height: 10px; background: var(--warning); border-radius: 50%; animation: pulseDot 1s infinite alternate 0.3s;"></div>
+        <div style="width: 10px; height: 10px; background: var(--primary); border-radius: 50%; animation: pulseDot 1s infinite alternate 0.6s;"></div>
     </div>
+
+    <style>
+        @keyframes bounceIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulseDot { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.3); opacity: 1; } }
+    </style>
 </div>
 
 <div class="main-container" id="mainContainer">
