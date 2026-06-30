@@ -225,14 +225,27 @@
             return;
         }
 
-        // പ്രോഗ്രസ് ബാറിന്റെ വേഗത കൂട്ടിയിരിക്കുന്നു
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-            progress += Math.floor(Math.random() * 15) + 10;
-            if(progress > 90) progress = 90;
-            if(document.getElementById('progressBar')) document.getElementById('progressBar').style.width = progress + '%';
-            if(document.getElementById('progressText')) document.getElementById('progressText').innerText = progress + '%';
-        }, 50);
+        // ഇംഗ്ലീഷിലുള്ള ഡൈനാമിക് മെസ്സേജുകൾ
+        const loadingMessages = [
+            "Connecting to server...",
+            "Fetching information...",
+            "Preparing results...",
+            "Almost there..."
+        ];
+        let msgIndex = 0;
+        
+        // ഓരോ 1.5 സെക്കൻഡിലും മെസ്സേജ് മാറിക്കൊണ്ടിരിക്കും
+        const msgInterval = setInterval(() => {
+            const textEl = document.getElementById('loadingTextDynamic');
+            if(textEl) {
+                textEl.style.opacity = 0; 
+                setTimeout(() => {
+                    msgIndex = (msgIndex + 1) % loadingMessages.length;
+                    textEl.innerText = loadingMessages[msgIndex];
+                    textEl.style.opacity = 1; 
+                }, 300);
+            }
+        }, 1500);
 
         try {
             const response = await fetch(API_URL, {
@@ -241,9 +254,8 @@
             });
             const data = await response.json();
             
-            clearInterval(progressInterval);
+            clearInterval(msgInterval); // ഡാറ്റ ലഭിച്ചാൽ മെസ്സേജ് മാറുന്നത് നിർത്തുക
 
-            // ഡാറ്റ ലഭിച്ച ഉടനെ യാതൊരു ഡിലേയും ഇല്ലാതെ പോർട്ടൽ ഓപ്പൺ ആകുന്നു
             if(data.success) {
                 APP_CONFIG = data.config;
                 IS_LIVE_MODE = data.status.isLive;
@@ -251,6 +263,7 @@
                 
                 populateUI();
                 
+                // യാതൊരു ഡിലേയുമില്ലാതെ ലോഡർ മറച്ച് പോർട്ടൽ കാണിക്കുന്നു
                 document.getElementById('initialLoader').style.display = 'none';
                 document.getElementById('mainContainer').style.display = 'block';
                 startPortalLogic(); 
@@ -259,11 +272,11 @@
             }
 
         } catch(error) {
-            clearInterval(progressInterval);
+            clearInterval(msgInterval);
             document.getElementById('initialLoader').innerHTML = `<div style="text-align:center; padding:20px; color:#c62828;"><h3>Connection Failed</h3><p>Unable to connect to the server. Check your internet.</p></div>`;
         }
     }
-
+    
     function populateUI() {
         document.getElementById('pageTitle').innerText = APP_CONFIG.SHORT_NAME + " Result Portal";
         
