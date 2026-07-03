@@ -507,6 +507,7 @@
             if (endX > touchStartX + 50) changeImage(-1);
         });
     </script>
+
     <script>
         // 1. Secret Click Method (ലോഗോയിൽ 5 തവണ വേഗത്തിൽ ക്ലിക്ക് ചെയ്യുക)
         let triggerCount = 0;
@@ -534,5 +535,19 @@
             }
         });
     </script>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            // സ്ക്രോൾ ചെയ്യുമ്പോൾ മെനു ഓപ്പൺ ആണെങ്കിൽ (show ക്ലാസ് ഉണ്ടെങ്കിൽ) മാത്രം ക്ലോസ് ചെയ്യുക
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (bsCollapse) {
+                    bsCollapse.hide();
+                }
+            }
+        });
+    </script>
+
 </body>
 </html>
