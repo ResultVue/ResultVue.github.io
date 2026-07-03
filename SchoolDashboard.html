@@ -141,6 +141,7 @@
                     
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
                         <button class="btn-outline" style="flex: 1; padding: 10px 5px; font-size: 12px;" onclick="openDatabase()">📊 Open Database</button>
+                        <button class="btn-green" style="flex: 1; padding: 10px 5px; font-size: 12px; color: white;" onclick="warmupCache()" title="Pre-load data for ultra-fast student searches">⚡ Pre-load Results</button>
                         <button class="btn-orange" style="flex: 1; padding: 10px 5px; font-size: 12px;" onclick="clearCache()">🧹 Clear Cache</button>
                     </div>
                 </div>
@@ -450,6 +451,19 @@
         function clearCache() {
             Swal.fire({ title: 'Clear Cache?', text: "Do this after updating marks in Google Sheet.", icon: 'info', showCancelButton: true, confirmButtonColor: '#12224A' }).then((result) => {
                 if (result.isConfirmed) callApi('clearCache', {}, 'Cache cleared successfully.');
+            });
+        }
+
+        function warmupCache() {
+            Swal.fire({ 
+                title: 'Pre-load Results?', 
+                text: "This will prepare all student data in the background to make the result portal ultra-fast. It might take a few seconds.", 
+                icon: 'info', 
+                showCancelButton: true, 
+                confirmButtonColor: '#00A651',
+                confirmButtonText: 'Yes, Pre-load Now'
+            }).then((result) => {
+                if (result.isConfirmed) callApi('warmupCache', {}, 'Portal is now ultra-fast! Data pre-loaded successfully.');
             });
         }
 
