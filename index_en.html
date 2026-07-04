@@ -111,6 +111,21 @@
         @media (max-width: 768px) { .whatsapp-float { width: 55px; height: 55px; bottom: 20px; right: 20px; font-size: 32px; } }
         
         .lang-toggle:hover { background-color: var(--logo-blue) !important; color: white !important; border-color: var(--logo-blue) !important; }
+
+        /* Language Toggle Text Style */
+        .lang-text-toggle {
+            font-weight: 800;
+            color: #9ca3af; /* Subtle Gray */
+            text-decoration: none;
+            font-size: 16px;
+            letter-spacing: 1px;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .lang-text-toggle:hover, .lang-text-toggle:active {
+            color: var(--logo-blue);
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -126,6 +141,9 @@
             <a class="navbar-brand" href="#">
                 <img src="images/logo.png" alt="ResultVue Logo">
             </a>
+            
+            <a href="index.html" class="lang-text-toggle d-lg-none ms-auto me-3" title="Switch to Malayalam">ML</a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -137,11 +155,6 @@
                     <li class="nav-item"><a class="nav-link custom-scroll-link" href="#user-guide">User Guide</a></li>
                     <li class="nav-item"><a class="nav-link custom-scroll-link" href="#gallery">Gallery</a></li>
                     
-                    <!-- Language Toggle (ML) -->
-                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0 d-flex justify-content-center">
-                        <a href="index.html" class="btn btn-outline-secondary fw-bold rounded-circle d-flex align-items-center justify-content-center lang-toggle" style="width: 42px; height: 42px; border: 2px solid #ccc; color: #555; transition: 0.3s;" title="Switch to Malayalam">ML</a>
-                    </li>
-                    
                     <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
                         <a class="btn btn-outline-blue w-100" href="SchoolDashboard.html">
                             <i class="fas fa-user-shield me-1"></i> Admin Login
@@ -150,11 +163,14 @@
                     <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
                         <a class="btn btn-green shadow-sm w-100" href="register.html">Register Now</a>
                     </li>
+                    
+                    <li class="nav-item ms-lg-4 d-none d-lg-flex align-items-center">
+                        <a href="index.html" class="lang-text-toggle" title="Switch to Malayalam">ML</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
-
     <section class="hero-section">
         <div class="container">
             <h1 class="display-3 fw-bold mb-3" style="color: var(--logo-blue);">ResultVue: Smart Results. <br><span style="color: var(--logo-green);">Simple Management.</span></h1>
