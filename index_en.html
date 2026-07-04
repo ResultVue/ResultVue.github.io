@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>ResultVue | Smart Exam Result Management & Automation</title>
+    <meta name="title" content="ResultVue | Smart Exam Result Management & Automation">
+    <meta name="description" content="ResultVue is a complete, automated exam result management portal for educational institutions. Easily publish, manage, and share student results with smart features and zero hassle.">
+    <meta name="keywords" content="exam result management, result automation, student result portal, bulk print results, school management system, ResultVue, automated result publishing, educational software">
+    <meta name="author" content="ResultVue">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Address Bar Theme Color (Mobile Browsers) -->
+    <meta name="theme-color" content="#12224A">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="apple-touch-icon" href="images/favicon.png">
+
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://resultvue.github.io/">
+    <meta property="og:title" content="ResultVue | Exam Result Management & Automation">
+    <meta property="og:description" content="Smart and simple result management tool for institutions. Publish results directly from Google Sheets to a professional portal.">
+    <meta property="og:image" content="images/logo.png">
+
+    <!-- Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Styles -->
+    <style>
+        :root {
+            --logo-blue: #12224A;
+            --logo-green: #00A651;
+            --logo-orange: #F58220;
+            --bg-light: #F4F7F9;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 150px; }
+        body { font-family: 'Anek Latin', sans-serif; color: #333; }
+
+        .navbar { background-color: white; border-bottom: 3px solid var(--logo-green); padding: 10px 0; }
+        .navbar-brand img { height: 50px; width: auto; object-fit: contain; }
+        .nav-link { color: var(--logo-blue) !important; font-weight: 600; cursor: pointer; }
+        
+        .btn-outline-blue { color: var(--logo-blue); border: 2px solid var(--logo-blue); border-radius: 50px; padding: 10px 25px; font-weight: 700; transition: 0.3s; text-decoration: none;}
+        .btn-outline-blue:hover { background-color: var(--logo-blue); color: white; }
+
+        .hero-section { background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%); padding: 100px 0; text-align: center; }
+        .btn-green { background-color: var(--logo-green); color: white; border-radius: 50px; padding: 10px 25px; font-weight: 700; border: none; transition: 0.3s; text-decoration: none;}
+        .btn-green:hover { background-color: #00823F; color: white; transform: scale(1.05); }
+        .demo-section { padding: 80px 0; background: white; border-bottom: 1px solid #eee; }
+
+        .features-grid { padding: 80px 0; background: var(--bg-light); }
+        .feature-card { border: none; border-radius: 15px; padding: 30px; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border-top: 4px solid var(--logo-green); }
+        .feature-card:hover { transform: translateY(-10px); border-top-color: var(--logo-orange); }
+        .icon-box { color: var(--logo-green); margin-bottom: 20px; }
+
+        .special-section { background-color: var(--logo-blue); color: white; padding: 80px 0; }
+        .special-box { border: 2px dashed var(--logo-orange); padding: 40px; border-radius: 20px; }
+        .pricing-section { padding: 80px 0; background: white; }
+        .price-card { border: 3px solid var(--logo-green); border-radius: 25px; padding: 50px; position: relative; background: white; }
+        .price-tag { font-size: 4.5rem; font-weight: 800; color: var(--logo-blue); }
+
+        .guide-box { max-width: 900px; background: #ffffff; border-left: 6px solid var(--logo-orange); border-radius: 15px; padding: 30px; border-top: 1px solid #eef5ee; border-right: 1px solid #eef5ee; border-bottom: 1px solid #eef5ee; margin: 0 auto; }
+        .guide-icon-circle { width: 70px; height: 70px; background-color: #e8f5e9; color: var(--logo-green); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-green-custom { color: var(--logo-green); border: 2px solid var(--logo-green); border-radius: 50px; transition: 0.3s; text-decoration: none; display: inline-block; }
+        .btn-green-custom:hover { background-color: var(--logo-green); color: white !important; transform: translateY(-2px); }
+        .step-circle { width: 45px; height: 45px; background: var(--logo-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; font-weight: bold; flex-shrink: 0; }
+
+        .gallery-section { padding: 80px 0; background: #fff; border-top: 1px solid #eee; }
+        .custom-scroll { gap: 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .custom-scroll::-webkit-scrollbar { display: none; }
+        .gallery-item { min-width: 260px; scroll-snap-align: start; }
+        .gallery-img-container { aspect-ratio: 3 / 4; overflow: hidden; border-radius: 12px; cursor: pointer; background: #eee; }
+        .gallery-img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        
+        .lightbox-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; justify-content: center; align-items: center; touch-action: none; }
+        .lightbox-content { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
+        .lightbox-content img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; }
+        .lightbox-caption-bubble { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 10px 25px; border-radius: 30px; font-weight: 600; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; z-index: 10005; }
+        .lightbox-caption-bubble.show { opacity: 1; }
+        .lightbox-close { position: absolute; top: 15px; right: 15px; font-size: 40px; color: white; background: none; border: none; cursor: pointer; z-index: 10010; text-shadow: 2px 2px 8px rgba(0, 0, 0, 1); }
+        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); color: white; border: none; padding: 20px; font-size: 30px; cursor: pointer; border-radius: 50%; z-index: 10001; }
+
+        footer { background-color: #0d0d0d; color: #ffffff; padding: 60px 0 30px; border-top: 3px solid var(--logo-orange);}
+        footer a { color: #8bb3ff; text-decoration: none; transition: 0.3s; }
+        footer a:hover { color: var(--logo-orange); }
+
+        @media (max-width: 768px) { .guide-box { padding: 20px; margin: 0 15px; } }
+
+        .trust-badge-wrapper { background-color: var(--bg-light); padding-bottom: 60px; text-align: center; }
+        .trust-badge { display: inline-flex; align-items: center; background: white; padding: 15px 45px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border: 2px solid #eef5ee; transition: all 0.3s ease; }
+        .trust-badge:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0, 166, 81, 0.2); border-color: var(--logo-green); }
+        .trust-icon { color: var(--logo-green); font-size: 2.2rem; margin-right: 15px; filter: drop-shadow(2px 4px 6px rgba(0, 166, 81, 0.3)); }
+        .trust-text { color: var(--logo-blue); font-size: 1.6rem; font-weight: 800; margin: 0; text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.15); }
+
+        @media (max-width: 768px) { .trust-badge { padding: 12px 25px; } .trust-icon { font-size: 1.8rem; margin-right: 12px; } .trust-text { font-size: 1.3rem; } }
+
+        .whatsapp-float { position: fixed; width: 60px; height: 60px; bottom: 40px; right: 40px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 35px; box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease; animation: pulse-wa 2s infinite; will-change: transform; }
+        .whatsapp-float:hover { color: #FFF; background-color: #1ebe57; transform: scale(1.1); }
+        @keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+        @media (max-width: 768px) { .whatsapp-float { width: 55px; height: 55px; bottom: 20px; right: 20px; font-size: 32px; } }
+        
+        .lang-toggle:hover { background-color: var(--logo-blue) !important; color: white !important; border-color: var(--logo-blue) !important; }
+    </style>
+</head>
+<body>
+
+    <a href="https://wa.me/918138860044?text=Hi%2C%20I'm%20%5BYour%20Name%5D%0AI%20want%20to%20know%20more%20about%20ResultVue" class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+        </svg>
+    </a>
+
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="images/logo.png" alt="ResultVue Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#demo">Demo</a></li>
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#pricing">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#user-guide">User Guide</a></li>
+                    <li class="nav-item"><a class="nav-link custom-scroll-link" href="#gallery">Gallery</a></li>
+                    
+                    <!-- Language Toggle (ML) -->
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0 d-flex justify-content-center">
+                        <a href="index.html" class="btn btn-outline-secondary fw-bold rounded-circle d-flex align-items-center justify-content-center lang-toggle" style="width: 42px; height: 42px; border: 2px solid #ccc; color: #555; transition: 0.3s;" title="Switch to Malayalam">ML</a>
+                    </li>
+                    
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+                        <a class="btn btn-outline-blue w-100" href="SchoolDashboard.html">
+                            <i class="fas fa-user-shield me-1"></i> Admin Login
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a class="btn btn-green shadow-sm w-100" href="register.html">Register Now</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-3" style="color: var(--logo-blue);">ResultVue: Smart Results. <br><span style="color: var(--logo-green);">Simple Management.</span></h1>
+            <p class="lead mb-5 text-secondary fs-4">The simplest and fastest way to publish exam results.</p>
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                <a href="#pricing" class="btn btn-green btn-lg px-5 shadow custom-scroll-link">Start for ₹99</a>
+                <a href="#demo" class="btn btn-outline-dark btn-lg px-5 custom-scroll-link">View Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features-grid">
+        <div class="container">
+            <h2 class="text-center display-6 fw-bold mb-5" style="color: var(--logo-blue);">ResultVue Control Center</h2>
+            <div class="row g-4 text-start">
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-file-pdf fa-3x"></i></div>
+                        <h4 class="fw-bold">Multi-Format Sharing</h4>
+                        <p class="text-muted">Easily share results with students in PDF, Image, or Text formats directly from the portal.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-user-shield fa-3x"></i></div>
+                        <h4 class="fw-bold">Admin Control Panel</h4>
+                        <p class="text-muted">Manage mark entries, scheduling, and overall portal access effortlessly through a secure dashboard.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-calendar-alt fa-3x"></i></div>
+                        <h4 class="fw-bold">Smart Scheduling</h4>
+                        <p class="text-muted">Set a specific date and time for the results to automatically publish to the students.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-print fa-3x"></i></div>
+                        <h4 class="fw-bold">Bulk Printing</h4>
+                        <p class="text-muted">Print all student results of a specific class in a single click, saving valuable time for teachers.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-chart-line fa-3x"></i></div>
+                        <h4 class="fw-bold">Live Analytics</h4>
+                        <p class="text-muted">Monitor real-time statistics and track how many students are actively checking their results.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="icon-box"><i class="fas fa-power-off fa-3x"></i></div>
+                        <h4 class="fw-bold">Instant Close</h4>
+                        <p class="text-muted">Instantly close the result portal or set an automated closing schedule whenever required.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="trust-badge-wrapper">
+        <div class="container">
+            <div class="trust-badge">
+                <i class="fas fa-shield-alt trust-icon"></i>
+                <h3 class="trust-text">100% Secure & Private</h3>
+            </div>
+        </div>
+    </section>
+
+    <section id="demo" class="demo-section">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="display-6 fw-bold mb-4" style="color: var(--logo-blue);">See how our system works live...</h2>
+                    <p class="fs-5 text-muted mb-5">Experience how professionally you can publish your institution's results by exploring our live demo portal.</p>
+                    <a href="portal.html?school=RVDEMO" target="_blank" class="btn btn-outline-dark btn-lg px-5 shadow-sm">View Live Demo</a>
+                    <p class="small text-danger mt-4 fw-bold"><i class="fas fa-info-circle me-1"></i> Select any class and enter a roll number between 1 and 5 to search.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="special-section text-center">
+        <div class="container">
+            <div class="special-box mx-auto">
+                <h2 class="display-6 fw-bold mb-4" style="color: var(--logo-orange);">Duplicate Roll Number? No Problem!</h2>
+                <p class="fs-4 fw-light">For institutions where multiple students share the same roll number in a class, ResultVue provides accurate results based on <strong>'Gender'</strong>. This eliminates a major headache for administrators.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing-section">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-5" style="color: var(--logo-blue);">Simple Pricing, Amazing Features.</h2>
+           
+            <div class="row justify-content-center g-4">
+                <div class="col-lg-5 col-md-6">
+                    <div class="price-card shadow-sm position-relative mt-3 d-flex flex-column h-100">
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" style="background-color: var(--logo-orange); color: white; border: 2px solid white;">
+                                🔥 20% OFF
+                            </span>
+                        </div>
+                        <div class="mt-4 mb-0">
+                            <span class="text-muted fs-3 text-decoration-line-through fw-bold opacity-50">₹125</span>
+                        </div>
+                        <div class="price-tag mb-0" style="line-height: 1.1;">₹99</div>
+                        <p class="fw-bold fs-4 mb-2" style="color: var(--logo-green);">/ Class</p>
+                        <p class="text-muted mb-4 fw-bold fs-5">Term Plan</p>
+                        <hr>
+                        <ul class="list-unstyled text-start mb-4 fs-5">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> All Sharing Formats</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Secured Admin Panel</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Real-time Traffic Stats</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-info-circle me-2"></i> Valid for one term</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="register.html" class="btn btn-outline-success btn-lg w-100 py-3 text-uppercase fw-bold shadow-sm" style="border-width: 2px;">Register Now</a>
+                            <p class="mt-4 text-muted small mb-0">This offer is valid for a limited time only.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-md-6">
+                    <div class="price-card shadow-lg position-relative mt-3 d-flex flex-column h-100" style="border-color: var(--logo-blue);">
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" style="background-color: var(--logo-blue); color: white; border: 2px solid white;">
+                                🌟 BEST VALUE
+                            </span>
+                        </div>
+                        <div class="mt-4 mb-0">
+                            <span class="fs-3 fw-bold opacity-0 d-block">₹000</span>
+                        </div>
+                        <div class="price-tag mb-0" style="line-height: 1.1; color: var(--logo-orange);">₹450</div>
+                        <p class="fw-bold fs-4 mb-2" style="color: var(--logo-green);">/ Class</p>
+                        <p class="text-muted mb-4 fw-bold fs-5">Annual Plan</p>
+                        <hr>
+                        <ul class="list-unstyled text-start mb-4 fs-5">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> All Sharing Formats</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Secured Admin Panel</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Real-time Traffic Stats</li>
+                            <li class="mb-2 fw-bold" style="color: var(--logo-blue);"><i class="fas fa-infinity text-warning me-2"></i> Unlimited Exams</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="register.html" class="btn btn-green btn-lg w-100 py-3 text-uppercase fw-bold shadow">Register Now</a>
+                            <p class="mt-4 text-muted small mb-0">Full access for one year.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center display-6 fw-bold mb-5" style="color: var(--logo-blue);">How to get started?</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-7 text-start">
+                    <div class="card border-0 shadow-sm p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="step-circle">1</div>
+                            <p class="mb-0 fs-5 fw-bold" style="color: var(--logo-blue);">Click on the 'Register Now' button above.</p>
+                        </div>
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="step-circle">2</div>
+                            <p class="mb-0 fs-5 fw-bold" style="color: var(--logo-blue);">Fill in your institution's details.</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="step-circle">3</div>
+                            <p class="mb-0 fs-5 fw-bold" style="color: var(--logo-blue);">Our team will contact you and securely set up your portal within 24 hours.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="user-guide" class="guide-section py-5">
+        <div class="container">
+            <div class="guide-box mx-auto shadow-sm">
+                <div class="row align-items-center text-center text-md-start">
+                    <div class="col-md-2 mb-3 mb-md-0 text-center">
+                        <div class="guide-icon-circle">
+                            <i class="fas fa-file-invoice fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h3 class="fw-bold mb-2" style="color: var(--logo-blue);">ResultVue User Guide</h3>
+                        <p class="mb-0 text-muted">Use our comprehensive user guide to get a clear understanding of how to manage and publish results efficiently.</p>
+                    </div>
+                    <div class="col-md-3 text-center text-md-end mt-4 mt-md-0">
+                        <a href="guide.pdf" target="_self" class="btn btn-green-custom px-4 py-2 fw-bold">
+                            <i class="fas fa-file-pdf me-2"></i>Read Guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="gallery-section py-5">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-5" style="color: var(--logo-blue);">Portal Walkthrough</h2>
+            <div class="gallery-wrapper position-relative">
+                <div id="imageGallery" class="d-flex flex-row overflow-auto pb-4 custom-scroll">
+                    <p id="loadingText" class="text-muted w-100 text-center">Loading images...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="customLightbox" class="lightbox-overlay">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav prev d-none d-md-block" onclick="changeImage(-1)">&#10094;</button>
+        <button class="lightbox-nav next d-none d-md-block" onclick="changeImage(1)">&#10095;</button>
+        <div class="lightbox-content">
+            <img id="lightboxImg" src="" alt="Full View" onclick="toggleZoom()">
+            <p id="lightboxCaption" class="lightbox-caption-bubble"></p>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="py-4 mt-5" style="background-color: var(--primary); color: white; border-top: 4px solid var(--success);">
+        <div class="container text-center">
+            <div class="mb-3">
+                <img id="secretAdminTrigger" src="images/logo.png" alt="ResultVue Logo" style="height: 30px; filter: brightness(0) invert(1); cursor: default;">
+            </div>
+            <p class="mb-2" style="font-size: 14px; color: #d1d5db;">&copy; 2026 ResultVue. All Rights Reserved. Powered by Secure Decentralized Automation.</p>
+            
+            <!-- Legal Links -->
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <a href="legal.html" class="text-decoration-none" style="color: #9ca3af; font-size: 13px; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ca3af'">Privacy Policy</a>
+                <span style="color: #6b7280; font-size: 13px;">|</span>
+                <a href="legal.html" class="text-decoration-none" style="color: #9ca3af; font-size: 13px; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ca3af'">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentImageData = [];
+        let currentIndex = 0;
+        let autoScrollInterval;
+        let captionTimeout;
+        let touchStartX = 0;
+
+        const API_URL = "https://script.google.com/macros/s/AKfycbxNL1AyCgayAFaVIuNErX5Bm7OpkWHpcPs7i1XBXB-gIZUu1jxG88gEYeHaVYEMV2INAg/exec";
+
+        document.querySelectorAll('.custom-scroll-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault(); 
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if(targetElement) {
+                    const y = targetElement.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    bootstrap.Collapse.getInstance(navbarCollapse).hide();
+                }
+            });
+        });
+
+        document.addEventListener('click', function (event) {
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                if (!navbarCollapse.contains(event.target) && !navbarToggler.contains(event.target)) {
+                    bootstrap.Collapse.getInstance(navbarCollapse).hide();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getGallery' })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    initGallery(data.images);
+                } else {
+                    document.getElementById('loadingText').innerHTML = "Gallery is currently unavailable.";
+                }
+            } catch (error) {
+                document.getElementById('loadingText').innerHTML = "Connection to gallery server failed.";
+            }
+        });
+
+        function initGallery(images) {
+            currentImageData = images;
+            const galleryDiv = document.getElementById('imageGallery');
+            const loadingText = document.getElementById('loadingText');
+            if (!images || images.length === 0) { loadingText.innerHTML = "No images found."; return; }
+            loadingText.style.display = 'none';
+
+            images.forEach((img, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                const imgUrl = 'https://drive.google.com/thumbnail?id=' + img.id + '&sz=w1000';
+                item.innerHTML = `<div class="gallery-img-container shadow-sm mb-2" onclick="openLightbox(${index})"><img src="${imgUrl}" alt="${img.caption}"></div><p class="small fw-bold text-secondary text-center">${img.caption}</p>`;
+                galleryDiv.appendChild(item);
+            });
+            startAutoScroll();
+        }
+
+        function startAutoScroll() {
+            const container = document.getElementById('imageGallery');
+            autoScrollInterval = setInterval(() => {
+                if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) { container.scrollTo({ left: 0, behavior: 'smooth' }); }
+                else { container.scrollBy({ left: 300, behavior: 'smooth' }); }
+            }, 2500);
+        }
+
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightboxImage();
+            document.getElementById('customLightbox').style.display = 'flex';
+            clearInterval(autoScrollInterval);
+            flashCaption();
+        }
+
+        function closeLightbox() { document.getElementById('customLightbox').style.display = 'none'; startAutoScroll(); }
+        function changeImage(step) { currentIndex = (currentIndex + step + currentImageData.length) % currentImageData.length; updateLightboxImage(); flashCaption(); }
+        
+        function updateLightboxImage() {
+            const img = currentImageData[currentIndex];
+            document.getElementById('lightboxImg').src = 'https://drive.google.com/thumbnail?id=' + img.id + '&sz=w1000';
+            document.getElementById('lightboxCaption').innerText = img.caption;
+        }
+
+        function flashCaption() {
+            const cp = document.getElementById('lightboxCaption');
+            cp.classList.add('show');
+            clearTimeout(captionTimeout);
+            captionTimeout = setTimeout(() => cp.classList.remove('show'), 2000);
+        }
+
+        function toggleZoom() {
+            const img = document.getElementById('lightboxImg');
+            img.style.transform = (img.style.transform === "scale(1.5)") ? "scale(1)" : "scale(1.5)";
+            img.style.transition = "transform 0.3s ease";
+        }
+
+        const lb = document.getElementById('customLightbox');
+        lb.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        lb.addEventListener('touchend', e => {
+            const endX = e.changedTouches[0].screenX;
+            if (endX < touchStartX - 50) changeImage(1);
+            if (endX > touchStartX + 50) changeImage(-1);
+        });
+    </script>
+
+    <script>
+        // Secret Click Method 
+        let triggerCount = 0;
+        const adminTrigger = document.getElementById('secretAdminTrigger');
+        
+        if(adminTrigger) {
+            adminTrigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                triggerCount++;
+                
+                if (triggerCount === 5) {
+                    window.location.href = 'admin.html';
+                }
+                setTimeout(() => { triggerCount = 0; }, 2000);
+            });
+        }
+
+        // Keyboard Shortcut Method
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'a' || e.key === 'A')) {
+                e.preventDefault(); 
+                window.location.href = 'Admin.html';
+            }
+        });
+    </script>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (bsCollapse) {
+                    bsCollapse.hide();
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
