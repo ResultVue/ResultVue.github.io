@@ -113,6 +113,21 @@
         .whatsapp-float:hover { color: #FFF; background-color: #1ebe57; transform: scale(1.1); }
         @keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
         @media (max-width: 768px) { .whatsapp-float { width: 55px; height: 55px; bottom: 20px; right: 20px; font-size: 32px; } }
+
+        /* Language Toggle Text Style */
+        .lang-text-toggle {
+            font-weight: 800;
+            color: #9ca3af; /* Subtle Gray */
+            text-decoration: none;
+            font-size: 16px;
+            letter-spacing: 1px;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .lang-text-toggle:hover, .lang-text-toggle:active {
+            color: var(--logo-blue);
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -128,6 +143,9 @@
             <a class="navbar-brand" href="#">
                 <img src="images/logo.png" alt="ResultVue Logo">
             </a>
+            
+            <a href="index_en.html" class="lang-text-toggle d-lg-none ms-auto me-3" title="Switch to English">EN</a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -146,6 +164,10 @@
                     </li>
                     <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
                         <a class="btn btn-green shadow-sm w-100" href="register.html">Register Now</a>
+                    </li>
+                    
+                    <li class="nav-item ms-lg-4 d-none d-lg-flex align-items-center">
+                        <a href="index_en.html" class="lang-text-toggle" title="Switch to English">EN</a>
                     </li>
                 </ul>
             </div>
