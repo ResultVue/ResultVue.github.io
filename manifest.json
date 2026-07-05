@@ -3,7 +3,7 @@
   "short_name": "ResultVue",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#F4F7F9",
+  "background_color": "#ffffff",
   "theme_color": "#12224A",
   "description": "Secure Decentralized Result Management Portal",
    "icons": [
