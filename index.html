@@ -570,14 +570,34 @@
     </script>
 
     <script>
-        window.addEventListener('scroll', function() {
-            const navbarCollapse = document.querySelector('.navbar-collapse');
-            // സ്ക്രോൾ ചെയ്യുമ്പോൾ മെനു ഓപ്പൺ ആണെങ്കിൽ (show ക്ലാസ് ഉണ്ടെങ്കിൽ) മാത്രം ക്ലോസ് ചെയ്യുക
-            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
-                const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                if (bsCollapse) {
-                    bsCollapse.hide();
-                }
+        document.addEventListener('DOMContentLoaded', function() {
+            let isMenuOpen = false;
+            let openScrollPos = 0;
+            const navbarCollapse = document.getElementById('navbarNav');
+
+            if (navbarCollapse) {
+                // മെനു ഓപ്പൺ ആകുമ്പോൾ ആ സമയത്തുള്ള സ്ക്രോൾ പൊസിഷൻ സേവ് ചെയ്യുന്നു
+                navbarCollapse.addEventListener('shown.bs.collapse', function () {
+                    isMenuOpen = true;
+                    openScrollPos = window.scrollY; 
+                });
+
+                // മെനു ക്ലോസ് ആകുമ്പോൾ സ്റ്റാറ്റസ് മാറ്റുന്നു
+                navbarCollapse.addEventListener('hidden.bs.collapse', function () {
+                    isMenuOpen = false;
+                });
+
+                // സ്ക്രോൾ ചെയ്യുമ്പോൾ 50px വ്യത്യാസം ഉണ്ടെങ്കിൽ മാത്രം ക്ലോസ് ചെയ്യുന്നു
+                window.addEventListener('scroll', function() {
+                    if (isMenuOpen) {
+                        if (Math.abs(window.scrollY - openScrollPos) > 50) {
+                            const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                            if (bsCollapse) {
+                                bsCollapse.hide();
+                            }
+                        }
+                    }
+                });
             }
         });
     </script>
